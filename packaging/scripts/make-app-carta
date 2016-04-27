@@ -678,6 +678,7 @@ sub collect_dependencies_work {
             next if $osname eq "linux" && $dir =~ m@^/usr/bin|^/opt/local/bin|^/opt/local/lib@;
             if ( m|\s+(?:\S+ => )?(\S+)| ) {
                 my $file = $1;
+                print "$file\n";
                 if ( basename(abs_path($file)) eq basename(abs_path($orig)) ) {
                     my $file_name = basename(abs_path($orig));
                     ###
@@ -970,7 +971,6 @@ sub prefix {
         my $prefix_candidate = $dir;
 
         if ( $osname eq "darwin" ) {
-            print "Darwining here\n";
             $prefix_candidate =~ s|/$root$||;
             $prefix_candidate =~ s|/Library/Frameworks$||;
             $prefix_candidate =~ s|/lib$||;
@@ -1179,7 +1179,14 @@ sub adjust_runtime_paths {
                                    push( @libraries, "$File::Find::dir/$_" );
                                    my $abspath = abs_path("$File::Find::dir/$_");
                                    if ( exists $libraries{$_} && abs_path($libraries{$_}) ne $abspath ) {
-                                       die "two libraries called $_ in $libraries{$_} and $abspath";
+                                      # if ( $_=~m|libplugin| || $_=~m|libcomponents| ) {
+                                         print "Found two libraries called $_ in $libraries{$_} and $abspath\n";
+                                         print "This should be alright since these are plugin libraries\n";
+                                         $libraries{$_} = exp_path("$File::Find::dir/$_");
+                                      #}
+                                      # else  {
+                                      #   die "two libraries called $_ in $libraries{$_} and $abspath";
+                                      # }
                                    } else {
                                        $libraries{$_} = exp_path("$File::Find::dir/$_");
                                        #### resolved local path does not exist: /tmp/CASA.app/Contents/Frameworks/Python.framework/Versions/2.7/bin/../../../../../../../../private/tmp/CASA.app/Contents/Frameworks/Python.framework/Versions/2.7/Python at ./make-app line 201, <INFO> line 3.

@@ -379,9 +379,26 @@ sub change_runtime_path {
     $local_exepath =~ s|^/||;
     $local_exe =~ s|^$common/?||;
     $local_lib =~ s|^$common/?||;
+    print "#######################################\n";
+    print "local_libfile $local_libfile\n";
+    print "local_libpath $local_libpath\n";
+    print "local_exepath $local_exepath\n";
+    print "common $common\n";
+    print "libraries $libraries\n";
+    print "#######################################\n";
     my @local_offset = split( '/', $local_exepath );
+    print "Loffset 1: @local_offset\n";
+    print "local_libpath : @local_libpath\n";
     #my $local_offset = scalar(@local_offset) == 0 ? ($local_libpath ? "lib/$local_libpath" : 'lib') : ( $local_libpath ? join( '/', ('..') x scalar(@local_offset), "$local_libpath") : join( '/', ('..') x scalar(@local_offset) ) );
     my $local_offset = scalar(@local_offset) == 0 ? ($local_libpath ? "$local_libpath" : '') : ( $local_libpath ? join( '/', ('..') x scalar(@local_offset), "$local_libpath") : join( '/', ('..') x scalar(@local_offset) ) );
+    print "Loffset 2: $local_offset\n";
+    if ($libraries =~ m|libplugin.dylib|) {
+        @split_path = split( '/', $libraries);
+        $local_offset = "../../Plugins/" . join('/', @split_path[-2]);
+        print "Exe: $exe \n";
+        print "Plugin offset: $local_offset\n";
+    }
+    print "install_name_tool -change \"$libref\" \"\@loader_path/$local_offset/$local_libfile\" \"$exe\" 2>&1 |";
     unless ( -e dirname($exe) . "/$local_offset/$local_libfile" ) { die "resolved local path does not exist: " . dirname($exe) . "/$local_offset/$local_libfile" }
     unless ( -w $exe ) { add_write_permission( $exe ) }
     my $printed_label = '';
@@ -1181,8 +1198,10 @@ sub adjust_runtime_paths {
                                    if ( exists $libraries{$_} && abs_path($libraries{$_}) ne $abspath ) {
                                       # if ( $_=~m|libplugin| || $_=~m|libcomponents| ) {
                                          print "Found two libraries called $_ in $libraries{$_} and $abspath\n";
-                                         print "This should be alright since these are plugin libraries\n";
-                                         $libraries{$_} = exp_path("$File::Find::dir/$_");
+                                         print "<WARN>Using $libraries{$_}\n";
+                                         #$explicitpath= exp_path("$File::Find::dir/$_");
+                                         #print "Explicit path: $explicitpath \n";
+                                         #$libraries{$_} = exp_path("$File::Find::dir/$_");
                                       #}
                                       # else  {
                                       #   die "two libraries called $_ in $libraries{$_} and $abspath";

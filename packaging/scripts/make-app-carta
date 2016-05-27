@@ -39,7 +39,7 @@ $data_destination = '';
 $data_url = 'https://svn.cv.nrao.edu/svn/casa-data/distro';
 $ignore_missing_dep='';
 $template_url = '';
-$distro_name = 'casa';
+$distro_name = 'carta';
 $branch='release';
 @prefix = ( );
 $version = '';
@@ -51,11 +51,11 @@ $reltype = '';
 $| = 1;
 
 foreach ( @ARGV ) {
-    #m|^version=(\d+\.\d+\.\d+(?:-\d+)?)| && ( $version = $1 );
+    m|^version=(\d+\.\d+\.\d+(?:-\d+)?)| && ( $version = $1 );
     ### the "test" and "prerelease" distros are generated from a clean build
     ### the "stable" and "release" distros are repackaged "test" and "prerelease" distros
     ### "DEV" is a developer created distro...
-    #m@^type=(prerelease|test|DEV)@ && ( $reltype = $1 );
+    m@^type=(prerelease|test|DEV)@ && ( $reltype = $1 );
     m|^ws=(\S+)|i && -d "$1" && ( $workspace = $1, next );
     m|^arch=(\S+)|i && ( $arch = $1, next );
     m|^match=(.+)| && ( $match = $1, next );
@@ -85,12 +85,14 @@ if ( ! $arch ) {
 ###
 $distribution_directory='';
 if ( $osname eq "linux" ) {
-    unless( $template_url ) { $template_url = 'https://svn.cv.nrao.edu/svn/casa/development_tools/packaging/template/linux/casa-distro' }
+    print "output_dir $output_dir\n";
+    unless( $template_url ) { $template_url = 'https://svn.cv.nrao.edu/svn/casa/development_tools/packaging/template/linux/carta-distro' }
     if ( $template_url =~ m|/(\w+)-distro$| ) { $distro_name = $1 }
     die "please supply a version string with 'version=<VER>'" unless $version;
     die "please supply a release \"type\" string with 'type=[prerelease|test|DEV]'" unless $reltype;
     $distribution_directory = "$output_dir/$distro_name\-$reltype-$version";
-    $version_file = "$distribution_directory/lib/casa/VERSION";
+    print "BB: $distribution_directory\n";
+    #$version_file = "$distribution_directory/lib/casa/VERSION";
 
     %exclude = map { $_ => 1 } (
         "libXrandr", "librt", "libXi", "libatlas", "libX11", "libexpat", "libz", "libkeyutils", "libdl",
@@ -154,6 +156,7 @@ if ( $verbose ) { $| = 1 }
 ## fetch casa app template...
 unless ( $quiet ) { print "fetching template using subversion...\n"; }
 #fetch_template( $output_dir );
+print "Outputdir before svn $output_dir\n";
 fetch_svn( $output_dir, $template_url, $local_template_path, ($osname eq "linux" ? "$distro_name\-$reltype-$version" : '') );
 ## fill in workspace references...
 $app_dir = $distribution_directory;
@@ -178,6 +181,7 @@ fill_stubs( $app_dir, \&copy_file, "filling prefix relative stubs..." );
 ###
 $python_count = 0;
 foreach ( keys %libraries_dirs ) {
+    print "Key: $_";
     my $ref = $libraries_dirs{$_};
     foreach ( keys %$ref ) {
         if ( m|Python\.framework| ) { $python_count += 1; }
@@ -215,10 +219,10 @@ do {
             } while ( $cont ne 'y' );
         }
     }
-
     unless( $quiet ) { print "copying dependencies to $library_destination ...\n" }
 
     foreach $libdir ( keys %libraries_dirs ) {
+        print "<<<>>>> $libdir\n";
         my $ref = $libraries_dirs{$libdir};
         ###
         ### throw away dependencies to obvious system areas...
@@ -251,7 +255,8 @@ do {
                     die "dependency $libdir/$destfile does NOT exist... $initial";
                 }
 
-            } else {
+            } else { 
+                print "Copying: $libdir/$destfile\n";
                 copy_file( "$libdir/$destfile", $library_destination );
             }
         }
@@ -266,7 +271,8 @@ adjust_runtime_paths( "$distribution_directory" );
 # I don't think any of these are needed for Carta
 #adjust_version_file( "$distribution_directory", fetch_revision( $branch ) );
 #osx_specific_adjustments( "$distribution_directory" );
-#linux_specific_adjustments( "$distribution_directory" );
+
+linux_specific_adjustments( "$distribution_directory" );
 
 #create_revstate( $workspace, ($osname eq 'darwin' ? "$distribution_directory/Contents/Resources/revstate" : "$distribution_directory/.revstate" ) );
 
@@ -670,6 +676,7 @@ sub collect_dependencies_work {
         ### initial 'libqsvgicon.dylib' dependency causes 'libqsvgicon.dylib' to
         ### show up as the directory... throw this away...
         ###
+        print "Orig: $orig Dependency: $_\n";
         next if $osname eq "darwin" && m|$libname\s+|;
         next if $osname eq "linux" && m|not found$|;
         next if $osname eq "linux" && m|statically linked|;
@@ -680,6 +687,7 @@ sub collect_dependencies_work {
         if ( $match && m|$match| && m|\s+(?:\S+ => )(\S+)| ) { print "<match:depend> $file [$1]\n" }
         if ( m|^\s+(?:\S+ => )?(\S+?/Frameworks)|           ||
              m|^\s+(?:\S+ => )?($workspace/$arch)|          ||
+             m|^\s+(?:\S+ => )?($workspace/../core/)|          ||
              m|^\s+(?:\S+ => )?(\S*?/lib)/|                 ||
              m|^\s+(?:\S+ => )?(\S*?/lib64)/|               ||
              m|^\s+(?:\S+ => )?(\S+)| ) {
@@ -749,6 +757,7 @@ sub collect_dependencies_work {
         }
     }
     close( INFO );
+    #exit(0);
 }
 
 sub scan_application {
@@ -782,7 +791,7 @@ sub scan_application {
     unless ( $quiet ) { print "\tfound ",sprintf($spf,scalar(@binaries))," binaries\n" }
     unless ( $quiet ) { print "\t      ",sprintf($spf,scalar(@scripts))," scripts\n" }
     unless ( $quiet ) { print "\t      ",sprintf($spf,scalar(@libraries))," shared libraries\n" }
-
+  
     foreach ( @binaries, @libraries ) {
         collect_dependencies( $_, $final_pass );
     }
@@ -879,21 +888,31 @@ sub fetch_svn {
     my $limit = 3;
     my $msg = "...";
     my $fetchdir = ($output_target ? $output_target : basename( $url ));
-
+    print "AA: output_dir $output_dir \n";
+    print "AA: output_target $output_target \n";
+    print "AA: fetch_dir $fetchdir \n";
     if ( ! -d $output_dir ) { make_path($output_dir); }
     chdir( $output_dir ) or die "could not access the output directory '$output_dir'";
-
+    
     if ( -e $fetchdir ) { die "output directory ($fetchdir) exists" . ($output_dir ? " in $output_dir" : '') }
-
+    print "Fetchdir $fetchdir\n";
     if ( $verbose ) { print "<S>\tfetching $url to $output_target" . ($output_target ? '/' : '') . "$fetchdir\n" }
 
     if ( $override ) {
-    unless( -d $override ) { die "override directory does not exist..." }
-    $msg = "ditto $override $fetchdir";
-    open( SVN, "ditto $override $fetchdir 2>&1 |" );
-    } else {
-    open( SVN, "echo t | svn $cmd $url $fetchdir 2>&1 |" ) or die $!;
+        if ($osname eq "linux") {
+            ditto2($override,$fetchdir);
+        }
+        else {
+            unless( -d $override ) { die "override directory does not exist..." }
+            $msg = "ditto $override $fetchdir";
+            print "ditto $override $fetchdir 2>&1 |\n";
+            open( SVN, "ditto $override $fetchdir 2>&1 |" );
+        }
     }
+    else {
+        open( SVN, "echo t | svn $cmd $url $fetchdir 2>&1 |" ) or die $!;
+    }
+    
     my @output = ( );
     while ( <SVN> ) {
     ###
@@ -1564,8 +1583,8 @@ sub linux_specific_adjustments {
         }
     }
 
-    linux_substitute( "$appdir/bin/casa-config" ) if -f "$appdir/bin/casa-config";
-    linux_substitute( "$appdir/.revstate" ) if -f "$appdir/.revstate";
+    #linux_substitute( "$appdir/bin/casa-config" ) if -f "$appdir/bin/casa-config";
+    #linux_substitute( "$appdir/.revstate" ) if -f "$appdir/.revstate";
 }
 
 sub add_write_permission {
@@ -1631,7 +1650,25 @@ sub ditto {
     ## when called from 'find' python's current directory is
     ## in the directory that we're copying to...
     ##if ( ! -e $to ) { $to = basename($to) }
+    #print "DITTO: /bin/cp --dereference --remove-destination -Rp $from $to 2>&1 |\n";
+    #print "DITTO: /bin/cp -aR $from $to 2>&1 |\n";
+    #open( DITTO, ($osname eq "linux" ? "/bin/cp -aR $from $to 2>&1 |" : "/usr/bin/ditto $from $to 2>&1 |") );
     open( DITTO, ($osname eq "linux" ? "/bin/cp --dereference --remove-destination -Rp $from $to 2>&1 |" : "/usr/bin/ditto $from $to 2>&1 |") );
+    my $msg = "in copying from $from to $to";
+    while ( <DITTO> ) {
+        if ( $msg ) {
+            print $msg . "\n";
+            $msg = '';
+        }
+        print "<ditto>\t\t\t$from";
+    }
+}
+
+sub ditto2 {
+    my $from = shift(@_);
+    my $to = shift(@_);
+
+    open( DITTO, ($osname eq "linux" ? "/bin/cp -aR $from $to 2>&1 |" : "/usr/bin/ditto $from $to 2>&1 |") );
     my $msg = "in copying from $from to $to";
     while ( <DITTO> ) {
         if ( $msg ) {

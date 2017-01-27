@@ -255,7 +255,7 @@ do {
                     die "dependency $libdir/$destfile does NOT exist... $initial";
                 }
 
-            } else { 
+            } else {
                 print "Copying: $libdir/$destfile\n";
                 copy_file( "$libdir/$destfile", $library_destination );
             }
@@ -459,14 +459,20 @@ sub expand_prefix {
 }
 sub expand_stub {
     my $dir = '';
-    my $_ = shift(@_);
-    m|^\@\@WS\@\@| && ( $dir = $workspace );
-    m|^\@\@ARCH\@\@| && ( $dir = "$workspace/$arch" );
-    m|^\@\@PREFIX\@\@| && ( $dir = expand_prefix($_) );
+    my $current_record = shift(@_);
+    if ($current_record =~ m|^\@\@WS\@\@|) {
+        $dir = $workspace;
+    }
+    if ($current_record =~ m|^\@\@ARCH\@\@|) {
+        $dir = "$workspace/$arch";
+    }
+    if ($current_record =~ m|^\@\@PREFIX\@\@|) {
+        $dir = expand_prefix($current_record);
+    }
 
 #   die "unrecognized stub substitution..." unless $dir;
     if ( $dir ) {
-        if ( m|\@\@\S+\@\@\[(\S+)\]| ) {
+        if ( $current_record =~ m|\@\@\S+\@\@\[(\S+)\]| ) {
             my $file = $1;
             my $found = '';
             ## find sets $main::_
@@ -476,18 +482,19 @@ sub expand_stub {
                     }
                 }
             };
-            my $default = $_;
+            my $default = $current_record;
             find( { wanted => $find_func }, $dir );
             if ( $found ) { return $found; }
             else { return $default; }
-        } elsif ( m|^\@\@\S+\@\@/| ) {
+        } elsif ( $current_record =~ m|^\@\@\S+\@\@/| ) {
             if ( $dir ) {
-                s|^\@\@\S+\@\@/|$dir/|;
+                $current_record =~ s|^\@\@\S+\@\@/|$dir/|;
             }
         }
     }
-    return $_;
+    return $current_record;
 }
+
 
 sub fill_union {
     my $link = shift(@_);
@@ -587,12 +594,12 @@ sub fill_stubs {
 }
 
 sub copy_file {
-    my $_ = shift(@_);
+    my $from = shift(@_);
     my $to = shift(@_);
 
-    unless ( m|^\@\@\S+\@\@| ) {
-        if ( ! -e $_ ) {
-            die "source for copy does not exist, $_";
+    unless ( $from =~ m|^\@\@\S+\@\@| ) {
+        if ( ! -e $from ) {
+            die "source for copy does not exist, $from";
         }
         ### stubs are a symlink that point to something like
         ### @@ARCH@@[somefile] or @@ARCH@@/some/path
@@ -602,15 +609,15 @@ sub copy_file {
         if ( -l $to && readlink($to) =~ m|^\@\@\S+\@\@| ) {
             unlink($to);
         } elsif ( -e $to ) {
-            if ( basename($to) eq basename($_) &&
-                 ( -f $to && -f $_              ||
-                   -l $to && -l $_              ||
-                   -d $to && -d $_ ) ) {
+            if ( basename($to) eq basename($from) &&
+                 ( -f $to && -f $from              ||
+                   -l $to && -l $from              ||
+                   -d $to && -d $from ) ) {
                 ### assume target has already been copied...
                 ### could check for differences...
                 return;
-            } elsif ( -d $to && ( -f $_ || -d $_ || -l $_ ) ) {
-                my $file = basename($_);
+            } elsif ( -d $to && ( -f $from || -d $from || -l $from ) ) {
+                my $file = basename($from);
                 ### copy file to target directory...
                 if ( -f "$to/$file" ) {
                     return;
@@ -619,14 +626,15 @@ sub copy_file {
             } elsif ( -l $to ) {
                 die "will not copy through symbolic link, $to";
             } else {
-                die "unknown condition while trying to copy $_ to $to";
+                die "unknown condition while trying to copy $from to $to";
             }
         }
         if ( $verbose ) {
-            print "<V>\tcopy\t$_\n";
+            print "<V>\tcopy\t$from\n";
             print "<V>\tto\t$to\n";
         }
-        ditto($_,$to);
+	if ( -l $to ) { unlink($to) }
+        ditto($from,$to);
     }
 }
 
@@ -778,7 +786,9 @@ sub scan_application {
                            ## skip subversion files and cmake build-tree files... (scanning our application tree)
                            if ( $dir =~ m|/\.svn| || $dir =~ m|/CMakeFiles| ) { return }
                            if ( -f $_ ) {
-                               my $file_type = file($_);
+                               $absf = abs_path($_);
+                               print "Checking: $absf\n";
+                               my $file_type = resolve_file_type($_);
                                $file_type eq 'exe' && push( @binaries, "$File::Find::dir/$_" );
                                $file_type eq 'sh' && push( @scripts, "$File::Find::dir/$_" );
                                $file_type eq 'lib' && push( @libraries, "$File::Find::dir/$_" );
@@ -791,7 +801,7 @@ sub scan_application {
     unless ( $quiet ) { print "\tfound ",sprintf($spf,scalar(@binaries))," binaries\n" }
     unless ( $quiet ) { print "\t      ",sprintf($spf,scalar(@scripts))," scripts\n" }
     unless ( $quiet ) { print "\t      ",sprintf($spf,scalar(@libraries))," shared libraries\n" }
-  
+
     foreach ( @binaries, @libraries ) {
         collect_dependencies( $_, $final_pass );
     }
@@ -801,7 +811,7 @@ sub scan_application {
     if ( $verbose ) { print "\n\n" }
 }
 
-sub file {
+sub resolve_file_type {
     state %cache;
     my $type = '';
     my $f = shift(@_);
@@ -823,13 +833,14 @@ sub file {
         $f =~ m@^(?:m|GNUm|M)akefile$@ && ($type = 'make');
         if ( $type eq '?' ) {
             # resort to using file utility...
-            my $_ = `file '$f'`;
-            m|Mach-O.*?executable| && ($type = 'exe');
-            m|Bourne-Again shell script| && ($type = 'sh');
-            m|Mach-O 64-bit bundle| && ($type = 'ldso');
-            m|archive random library| && ($type = 'a');
-            m|ELF.*executable| && ($type = 'exe');
-            if ( m@dynamically linked shared library|ELF.*shared object@ ) {
+            my $current_file = `file '$file'`;
+            if ($current_file =~ m|Mach-O.*?executable|) { $type = 'exe'; }
+            if ($current_file =~ m|Bourne-Again shell script|)  {$type = 'sh'; }
+            if ($current_file =~ m|Mach-O 64-bit bundle|) { $type = 'ldso'; }
+            if ($current_file =~ m|Mach-O 64-bit x86_64 bundle|) { $type = 'ldso'; }
+            if ($current_file =~ m|archive random library|)  {$type = 'a'; }
+            if ($current_file =~ m|ELF.*executable|) { $type = 'exe'; }
+            if ( $current_file =~ m@dynamically linked shared library|ELF.*shared object@ ) {
                 my $nme = basename($f);
                 ### for osx framework libraries can look like 'Python' or 'QtCore' so
                 ### this exception keys off of "*.so" for osx... for linux, the
@@ -840,7 +851,7 @@ sub file {
             ## we absolutely have to check, because CASA's build system seems to think
             ## that every python script should be marked as executable...
             ##
-            if ( -x $f && m|python.*?script text executable| ) {
+            if ( -x $f && $current_file =~ m|python.*?script(?:, ASCII)? text executable| ) {
                 open( my $py, "< $f" );
                 my $first_line = <$py>;
                 close($py);
@@ -888,12 +899,12 @@ sub fetch_svn {
     my $limit = 3;
     my $msg = "...";
     my $fetchdir = ($output_target ? $output_target : basename( $url ));
-    print "AA: output_dir $output_dir \n";
-    print "AA: output_target $output_target \n";
-    print "AA: fetch_dir $fetchdir \n";
+    print ">>: output_dir $output_dir \n";
+    print ">>: output_target $output_target \n";
+    print ">>: fetch_dir $fetchdir \n";
     if ( ! -d $output_dir ) { make_path($output_dir); }
     chdir( $output_dir ) or die "could not access the output directory '$output_dir'";
-    
+
     if ( -e $fetchdir ) { die "output directory ($fetchdir) exists" . ($output_dir ? " in $output_dir" : '') }
     print "Fetchdir $fetchdir\n";
     if ( $verbose ) { print "<S>\tfetching $url to $output_target" . ($output_target ? '/' : '') . "$fetchdir\n" }
@@ -912,7 +923,7 @@ sub fetch_svn {
     else {
         open( SVN, "echo t | svn $cmd $url $fetchdir 2>&1 |" ) or die $!;
     }
-    
+
     my @output = ( );
     while ( <SVN> ) {
     ###
@@ -1208,7 +1219,7 @@ sub adjust_runtime_paths {
                            ## skip subversion files and cmake build-tree files... (scanning our application tree)
                            if ( $dir =~ m|/\.svn| || $dir =~ m|/CMakeFiles| ) { return }
                            if ( -f $_ && $dir =~ m|^$appdir| ) {
-                               my $file_type = file($_);
+                               my $file_type = resolve_file_type($_);
                                $file_type eq 'exe' && push( @binaries, "$File::Find::dir/$_" );
                                $file_type eq 'ldso' && push( @binaries, "$File::Find::dir/$_" );
                                if ( $file_type eq 'lib' ) {
@@ -1239,12 +1250,19 @@ sub adjust_runtime_paths {
     unless ( $quiet ) { print "adjusting runtime paths...\n" }
     find( { wanted => $find_func }, $appdir );
     my $abs_appdir = abs_path($appdir);
+    print "appdir: $appdir";
+    print "binaries: \n";
+    print join(", ", @binaries);
+    print "\nlibraries: \n";
+    print join(", ", @libraries);
+
     foreach $exe ( @binaries, @libraries ) {
         next unless -f $exe;
         my $libname = basename(abs_path($exe));
         if ( $verbose ) { print "<P>\t$exe\n" }
         open( INFO, "otool -L $exe |" );
         foreach ( <INFO> ) {
+            print ">>INFO:  $_";
             ###
             ### sometimes otool output for shared libraries does not include paths:
             ###
@@ -1273,10 +1291,13 @@ sub adjust_runtime_paths {
             if ( m|^\s+(\S+).*| && -e $1 ) {
                 my $libref = $1;
                 my ($vol, $dir, $file) = File::Spec->splitpath(exp_path($libref));
+                print "LIB: $libraries{$file}";
                 if ( exists $libraries{$file} ) {
+                    print"Exists: $libraries{$file} \n";
                     if ( $verbose ) { print "<P>\t*\t$libref\n" }
                     change_runtime_path( $exe, $libref, $libraries{$file} );
                 } else {
+                    print"Not exists: $libraries{$file} \n";
                     if ( $verbose ) { print "<P>\t\t$libref\n" }
                 }
             }
@@ -1337,7 +1358,7 @@ sub osx_specific_adjustments {
     my @libiconv_path = ( );
     my %libiconv_refs = ( );
     my $iconv_func = sub {  my $file = $_;
-                            my $type = file($file);
+                            my $type = resolve_file_type($file);
                             if ( m|^libiconv| ) {
                                 @libiconv_path = ( $File::Find::dir, $file );
                             }
@@ -1516,7 +1537,7 @@ sub linux_specific_adjustments {
     my @python_scripts = ( );
     my $executable_func = sub {  next unless -f $_;
                                  my $file = $_;
-                                 my $type = file($file);
+                                 my $type = resolve_file_type($file);
                                  $type eq 'exe' &&  ( push( @executables, "$File::Find::dir/$file" ), next );
                                  $type eq 'lib' &&  ( push( @libraries, "$File::Find::dir/$file" ), next );
                                  $type eq 'ldso' && ( push( @loadable_objects, "$File::Find::dir/$file" ), next );
@@ -1680,9 +1701,9 @@ sub ditto2 {
 }
 
 sub libroot {
-    my $_ = shift(@_);
-    if ( -e $_ ) {
-        my ($name,$path,$suffix) = fileparse($_,qr/(\.so(?:\.[^.]+)*)$/);
+    my $filetoparse = shift(@_);
+    if ( -e $filetoparse ) {
+        my ($name,$path,$suffix) = fileparse($filetoparse,qr/(\.so(?:\.[^.]+)*)$/);
         return $name;
     }
 }

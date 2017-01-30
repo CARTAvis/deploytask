@@ -17,7 +17,8 @@ use File::Spec;
 use Cwd qw(abs_path getcwd);
 use List::Util qw(max);
 use POSIX qw(uname);
-
+use File::Copy;
+use Term::ANSIColor;
 use feature 'state';
 
 $osname = lc((uname( ))[0]);
@@ -83,21 +84,24 @@ if ( ! $arch ) {
 ###
 ### set up the directory where the binary distribution will be created...
 ###
+unless( $template_url ) { $template_url = 'https://open-bitbucket.nrao.edu/scm/casa/casa-pkg.git' }
+#unless( $template_url ) { $template_url = 'http://gitlab.nrao.edu/casa/development_tools.git' }
 $distribution_directory='';
 if ( $osname eq "linux" ) {
-    print "output_dir $output_dir\n";
-    unless( $template_url ) { $template_url = 'https://svn.cv.nrao.edu/svn/casa/development_tools/packaging/template/linux/carta-distro' }
+    #unless( $template_url ) { $template_url = 'https://svn.cv.nrao.edu/svn/casa/development_tools/packaging/template/linux/casa-distro' }
+    unless( $template_path ) { $template_path = 'casa-pkg/packaging/template/linux/carta-distro' }
     if ( $template_url =~ m|/(\w+)-distro$| ) { $distro_name = $1 }
     die "please supply a version string with 'version=<VER>'" unless $version;
-    die "please supply a release \"type\" string with 'type=[prerelease|test|DEV]'" unless $reltype;
-    $distribution_directory = "$output_dir/$distro_name\-$reltype-$version";
-    print "BB: $distribution_directory\n";
-    #$version_file = "$distribution_directory/lib/casa/VERSION";
+    $distribution_directory = ($bldtype ? "$output_dir/$distro_name\-$bldtype-$version" : "$output_dir/$distro_name\-$version");
+    print "Distribution directory: $distribution_directory\n";
+    print "Distro name: $distro_name\n";
+    print "Version: $version\n";
+    $version_file = "$distribution_directory/lib/casa/VERSION";
 
     %exclude = map { $_ => 1 } (
         "libXrandr", "librt", "libXi", "libatlas", "libX11", "libexpat", "libz", "libkeyutils", "libdl",
         "libresolv", "libnsl", "libXext", "libXfixes", "libgdbm", "libSM", "libsqlite3", "libcblas",
-        "libfontconfig", "libICE", "libXinerama", "libpng12", "libcom_err", "libkrb5support", "libbz2",
+        "libfontconfig", "libICE", "libXinerama", "libcom_err", "libkrb5support", "libbz2",
         "libutil", "libkrb5", "libxcb", "libfreetype", "libgobject-2.0", "libxml2",
         "libgssapi_krb5", "libgthread-2.0", "libXcursor", "libselinux",
         "libf77blas", "libc", "libXau", "libk5crypto", "libpthread", "libstdc++", "libXrender",
@@ -105,13 +109,14 @@ if ( $osname eq "linux" ) {
         "libcrypt", "libnuma" );
 
 } elsif ( $osname eq "darwin" ) {
-    unless( $template_url ) { $template_url = 'https://svn.cv.nrao.edu/svn/casa/development_tools/packaging/template/osx/Carta.app' }
+    #unless( $template_url ) { $template_url = 'https://svn.cv.nrao.edu/svn/casa/development_tools/packaging/template/osx/CASA.app' }
+    unless( $template_path ) { $template_path = 'casa-pkg/packaging/template/osx/Carta.app' }
     $distribution_directory = "$output_dir/Carta.app";
-    print "BB: $distribution_directory\n";
     $version_file = "$distribution_directory/Contents/Resources/VERSION"
 } else {
     die "unknown os environment: $osname";
 }
+
 
 if ( $output_dir ) {
     die "output directory, $output_dir, does not exist..." unless -d $output_dir;
@@ -157,8 +162,20 @@ if ( $verbose ) { $| = 1 }
 unless ( $quiet ) { print "fetching template using subversion...\n"; }
 #fetch_template( $output_dir );
 print "Outputdir before svn $output_dir\n";
-fetch_svn( $output_dir, $template_url, $local_template_path, ($osname eq "linux" ? "$distro_name\-$reltype-$version" : '') );
+#fetch_svn( $output_dir, $template_url, $local_template_path, ($osname eq "linux" ? "$distro_name\-$reltype-$version" : '') );
 ## fill in workspace references...
+print "Initial fetch\n";
+print "Template path: $template_path\n";
+if ($osname eq "linux") {
+    fetch_git( $output_dir, $template_url, $template_path, $local_template_path,
+           ($osname eq "linux" ? "$distro_name\-$reltype-$version" : '') );
+}
+else {
+    $macappdir = ( split '/', $template_path )[ -1 ];
+    print "Mac app dir: $macappdir\n";
+    fetch_git( $output_dir, $template_url, $template_path, $local_template_path, $macappdir);
+}
+
 $app_dir = $distribution_directory;
 print "app_dir: $app_dir\n";
 fill_stubs( $app_dir, \&copy_file, "filling explicit stubs" );
@@ -959,6 +976,76 @@ sub fetch_svn {
         }
     }
     close( SVN );
+    chdir( $orig_dir );
+}
+
+sub fetch_git {
+    my $output_dir = shift( @_ );
+    my $url = shift( @_ );
+    my $templatepath = shift( @_ );
+    my $override = shift( @_ );
+    my $output_target = shift( @_ );
+    my $cmd = ( scalar(@_) > 0 ? shift(@_) : 'clone' );
+    my $orig_dir = getcwd( );
+    my $limit = 3;
+    my $msg = "...";
+    #my $fetchdir = ($output_target ? $output_target : basename( $url ));
+    my $fetchdir = (basename( $url ));
+    my ($fetchdir, $tail) = split/\./, $fetchdir;
+
+    print "fetchdir $fetchdir\n";
+    if ( ! -d $output_dir ) { make_path($output_dir); }
+    chdir( $output_dir ) or die "could not access the output directory '$output_dir'";
+
+    if ( -e $fetchdir ) { die "output directory ($fetchdir) exists" . ($output_dir ? " in $output_dir" : '') }
+
+    if ( $verbose ) { print "<S>\tfetching $url to $output_target" . ($output_target ? '/' : '') . "$fetchdir\n" }
+
+    if ( $override ) {
+      unless( -d $override ) { die "override directory $override does not exist..." }
+      $msg = "ditto $override $fetchdir";
+      open( GIT, "ditto $override $fetchdir 2>&1 |" );
+    } else {
+      $tmp="tmp";
+      open( GIT, "echo t | git $cmd $url $fetchdir 2>&1 |" ) or die $!;
+    }
+    my @output = ( );
+    while ( <GIT> ) {
+    if ( m|^Error validating server certificate|               ||
+         m|certificate is not issued by a trusted authority|   ||
+         m|fingerprint to validate the certificate manually|   ||
+         m|^Certificate information:|                          ||
+             m@^ - (?:Hostname|Valid|Issuer|Fingerprint):@         ||
+         m|^\(R\)eject.*ermanently\?|  ) { next }
+        unless ( $quiet ) {
+            if ( scalar(@output) < $limit ) {
+                print "\t<git> $_";
+            }
+            push( @output, $_ );
+            if ( scalar(@output) > $limit ) {
+                shift(@output);
+            }
+        }
+    }
+    unless ( $quiet ) {
+        print "\t<git> $msg\n";
+        foreach ( @output ) {
+            print "\t<git> $_";
+        }
+    }
+    close( GIT );
+
+    # Checkout template branch
+    $pkg_dir = "$output_dir/$fetchdir";
+    print "casa-pkg dir: $pkg_dir";
+    $output = `cd  $pkg_dir && git checkout $template_branch`;
+    print $output;
+
+    # Move the template to the right place
+    print "moving $output_dir/$templatepath\n";
+    print "to $output_dir/$output_target\n";
+    move("$output_dir/$templatepath", "$output_dir/$output_target");
+
     chdir( $orig_dir );
 }
 

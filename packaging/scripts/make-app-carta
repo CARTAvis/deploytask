@@ -159,9 +159,9 @@ if ( $verbose ) { $| = 1 }
 
 
 ## fetch casa app template...
-unless ( $quiet ) { print "fetching template using subversion...\n"; }
+unless ( $quiet ) { print "fetching template...\n"; }
 #fetch_template( $output_dir );
-print "Outputdir before svn $output_dir\n";
+print "output_dir: $output_dir\n";
 #fetch_svn( $output_dir, $template_url, $local_template_path, ($osname eq "linux" ? "$distro_name\-$reltype-$version" : '') );
 ## fill in workspace references...
 print "Initial fetch\n";
@@ -993,7 +993,17 @@ sub fetch_git {
     my $fetchdir = (basename( $url ));
     my ($fetchdir, $tail) = split/\./, $fetchdir;
 
-    print "fetchdir $fetchdir\n";
+    print "**** fetch_git params ****\n";
+    print "output_dir: $output_dir\n";
+    print "url: $url\n";
+    print "templatepath: $templatepath\n";
+    print "override: $override\n";
+    print "output_target: $output_target\n";
+    print "cmd: $cmd\n";
+    print "orig_dir: $orig_dir\n";
+    print "limit: $limit\n";
+    print "msg: $msg\n";
+    print "fetchdir: $fetchdir\n";
     if ( ! -d $output_dir ) { make_path($output_dir); }
     chdir( $output_dir ) or die "could not access the output directory '$output_dir'";
 
@@ -1002,49 +1012,56 @@ sub fetch_git {
     if ( $verbose ) { print "<S>\tfetching $url to $output_target" . ($output_target ? '/' : '') . "$fetchdir\n" }
 
     if ( $override ) {
-      unless( -d $override ) { die "override directory $override does not exist..." }
-      $msg = "ditto $override $fetchdir";
-      open( GIT, "ditto $override $fetchdir 2>&1 |" );
+        if ($osname eq "linux") {
+            ditto2($override,"$output_dir/$output_target");
+        }
+        else {
+            unless( -d $override ) { die "override directory does not exist..." }
+            $msg = "ditto $override $output_dir/$output_target";
+            print "ditto $override $output_dir/$output_target 2>&1 |\n";
+            open( GIT, "ditto $override $output_dir/$output_target 2>&1 |" );
+            close( GIT );
+        }
     } else {
       $tmp="tmp";
       open( GIT, "echo t | git $cmd $url $fetchdir 2>&1 |" ) or die $!;
-    }
-    my @output = ( );
-    while ( <GIT> ) {
-    if ( m|^Error validating server certificate|               ||
-         m|certificate is not issued by a trusted authority|   ||
-         m|fingerprint to validate the certificate manually|   ||
-         m|^Certificate information:|                          ||
-             m@^ - (?:Hostname|Valid|Issuer|Fingerprint):@         ||
-         m|^\(R\)eject.*ermanently\?|  ) { next }
+        my @output = ( );
+        while ( <GIT> ) {
+        if ( m|^Error validating server certificate|               ||
+             m|certificate is not issued by a trusted authority|   ||
+             m|fingerprint to validate the certificate manually|   ||
+             m|^Certificate information:|                          ||
+                 m@^ - (?:Hostname|Valid|Issuer|Fingerprint):@         ||
+             m|^\(R\)eject.*ermanently\?|  ) { next }
+            unless ( $quiet ) {
+                if ( scalar(@output) < $limit ) {
+                    print "\t<git> $_";
+                }
+                push( @output, $_ );
+                if ( scalar(@output) > $limit ) {
+                    shift(@output);
+                }
+            }
+        }
         unless ( $quiet ) {
-            if ( scalar(@output) < $limit ) {
+            print "\t<git> $msg\n";
+            foreach ( @output ) {
                 print "\t<git> $_";
             }
-            push( @output, $_ );
-            if ( scalar(@output) > $limit ) {
-                shift(@output);
-            }
         }
-    }
-    unless ( $quiet ) {
-        print "\t<git> $msg\n";
-        foreach ( @output ) {
-            print "\t<git> $_";
-        }
-    }
-    close( GIT );
+        close( GIT );
 
-    # Checkout template branch
-    $pkg_dir = "$output_dir/$fetchdir";
-    print "casa-pkg dir: $pkg_dir";
-    $output = `cd  $pkg_dir && git checkout $template_branch`;
-    print $output;
+        # Checkout template branch
+        $pkg_dir = "$output_dir/$fetchdir";
+        print "casa-pkg dir: $pkg_dir";
+        $output = `cd  $pkg_dir && git checkout $template_branch`;
+        print $output;
 
-    # Move the template to the right place
-    print "moving $output_dir/$templatepath\n";
-    print "to $output_dir/$output_target\n";
-    move("$output_dir/$templatepath", "$output_dir/$output_target");
+        # Move the template to the right place
+        print "moving $output_dir/$templatepath\n";
+        print "to $output_dir/$output_target\n";
+        move("$output_dir/$templatepath", "$output_dir/$output_target");
+    }
 
     chdir( $orig_dir );
 }

@@ -51,6 +51,9 @@ $reltype = '';
 ## unbuffer output
 $| = 1;
 
+# Trim
+sub  trim { my $s = shift; $s =~ s/^\s+|\s+$//g; return $s };
+
 foreach ( @ARGV ) {
     m|^version=(\d+\.\d+\.\d+(?:-\d+)?)| && ( $version = $1 );
     ### the "test" and "prerelease" distros are generated from a clean build
@@ -683,7 +686,54 @@ sub collect_dependencies_work {
     if ( $match && $file =~ $match && $file =~ m|$match| ) { print "<match:source> $file\n" }
     my $libname = basename(abs_path($orig));
     open( INFO, ($osname eq "linux" ? "ldd $orig 2> /dev/null |" : "otool -L $orig |") );
+    # Dependency line reference
+    $i=0;
+    $qtpath="/Users/rpmbuild/Qt5.7.0/5.7/clang_64/lib";
     foreach ( <INFO> ) {
+        # Patch relative rpaths
+        if ($osname eq "darwin"){
+            print "$i $_";
+            chomp($_);
+            $id = "";
+            if ($i == "0") {
+                $currfile = $_;
+                $currfile =~ s/://g
+            }
+            if ($i == "1") {
+                $id = $_;
+                $id =~ s/ \(com.*//g;
+                print "ID: $id\n";
+                $id=trim($id);
+                print "Trimmed ID $id\n";
+                # Strip @rpath from id
+                $id =~ s/\@rpath\///g;
+                print "Stripped id $id\n";
+                #$prefix = $currfile =~ s/$id//gr;
+                $prefix = $qtpath;
+                # And because we have Versions, take those out also
+                $id =~ s/\/Versions.*//g;
+                print "Stripped id $id\n";
+                #$prefix = $currfile =~ s/$id.*//gr;
+                $prefix = $qtpath;
+
+            }
+            if ($_ =~ "\@rpath") {
+                #chomp($_);
+                $orig = trim($_);
+                $orig =~ s/ \(com.*//g;
+                print "Orig: $orig\n";
+                print "Currfile: $currfile\n";
+                print "Prefix: $prefix\n";
+                $_ =~ s/\@rpath/$prefix/g;
+                $modifiedpath = trim($_);
+                $modifiedpath =~ s/ \(com.*//g;
+                print "Modified path: $modifiedpath\n";
+                #print "Update command:\n";
+                #print "install_name_tool -change \\$orig $modifiedpath $currfile\n";
+                $orig=$modifiedpath
+            }
+            $i++;
+        }
         ###
         ### sometimes otool output for shared libraries does not include paths:
         ###

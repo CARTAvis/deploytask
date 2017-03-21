@@ -45,6 +45,7 @@ $branch='release';
 @prefix = ( );
 $version = '';
 $reltype = '';
+$qtpath="/Users/rpmbuild/Qt5.7.0/5.7/clang_64/lib";
 
 %exclude = ( );
 
@@ -276,7 +277,7 @@ do {
                 }
 
             } else {
-                print "Copying: $libdir/$destfile\n";
+                print "Copying: $libdir/$destfile to $library_destination\n" ;
                 copy_file( "$libdir/$destfile", $library_destination );
             }
         }
@@ -424,7 +425,7 @@ sub change_runtime_path {
         print "Exe: $exe \n";
         print "Plugin offset: $local_offset\n";
     }
-    print "install_name_tool -change \"$libref\" \"\@loader_path/$local_offset/$local_libfile\" \"$exe\" 2>&1 |";
+    print "install_name_tool -change \"$libref\" \"\@loader_path/$local_offset/$local_libfile\" \"$exe\" 2>&1 |\n";
     unless ( -e dirname($exe) . "/$local_offset/$local_libfile" ) { die "resolved local path does not exist: " . dirname($exe) . "/$local_offset/$local_libfile" }
     unless ( -w $exe ) { add_write_permission( $exe ) }
     my $printed_label = '';
@@ -688,8 +689,8 @@ sub collect_dependencies_work {
     open( INFO, ($osname eq "linux" ? "ldd $orig 2> /dev/null |" : "otool -L $orig |") );
     # Dependency line reference
     $i=0;
-    $qtpath="/Users/rpmbuild/Qt5.7.0/5.7/clang_64/lib";
     foreach ( <INFO> ) {
+        $rpathflag=0;
         # Patch relative rpaths
         if ($osname eq "darwin"){
             print "$i $_";
@@ -697,7 +698,8 @@ sub collect_dependencies_work {
             $id = "";
             if ($i == "0") {
                 $currfile = $_;
-                $currfile =~ s/://g
+                $currfile =~ s/://g;
+                $orig = $currfile
             }
             if ($i == "1") {
                 $id = $_;
@@ -718,19 +720,22 @@ sub collect_dependencies_work {
 
             }
             if ($_ =~ "\@rpath") {
+                $rpathflag=1;
                 #chomp($_);
-                $orig = trim($_);
-                $orig =~ s/ \(com.*//g;
+                #$orig = trim($_);
+                #$orig =~ s/ \(com.*//g;
+                $_ = trim($_);
+                $_ =~ s/ \(com.*//g;
                 print "Orig: $orig\n";
                 print "Currfile: $currfile\n";
                 print "Prefix: $prefix\n";
                 $_ =~ s/\@rpath/$prefix/g;
                 $modifiedpath = trim($_);
-                $modifiedpath =~ s/ \(com.*//g;
+                #$modifiedpath =~ s/ \(com.*//g;
                 print "Modified path: $modifiedpath\n";
                 #print "Update command:\n";
                 #print "install_name_tool -change \\$orig $modifiedpath $currfile\n";
-                $orig=$modifiedpath
+                $_=$modifiedpath;
             }
             $i++;
         }
@@ -765,9 +770,14 @@ sub collect_dependencies_work {
              m|^\s+(?:\S+ => )?($workspace/../core/)|          ||
              m|^\s+(?:\S+ => )?(\S*?/lib)/|                 ||
              m|^\s+(?:\S+ => )?(\S*?/lib64)/|               ||
+             m|^.*\.framework/.*|               || # Qt 5.7+ Frameworks
              m|^\s+(?:\S+ => )?(\S+)| ) {
 
             my $dir = $1;
+
+            if ($rpathflag) {
+                $dir = $qtpath;
+            }            
 
             ###
             ### ignore direct system dependencies...
@@ -776,9 +786,14 @@ sub collect_dependencies_work {
             ### nrao sysadmins like to install things in /opt/local
             ### and make them available in an ad hoc fashion...
             next if $osname eq "linux" && $dir =~ m@^/usr/bin|^/opt/local/bin|^/opt/local/lib@;
-            if ( m|\s+(?:\S+ => )?(\S+)| ) {
-                my $file = $1;
-                print "$file\n";
+            if ( m|\s+(?:\S+ => )?(\S+)| ||  m|(^.*\.framework/.*)| ) {
+
+                if ($rpathflag) {
+                    $file = $_;
+                }
+                else {
+                    my $file = $1;
+                }
                 if ( basename(abs_path($file)) eq basename(abs_path($orig)) ) {
                     my $file_name = basename(abs_path($orig));
                     ###
@@ -1404,7 +1419,7 @@ sub adjust_runtime_paths {
     unless ( $quiet ) { print "adjusting runtime paths...\n" }
     find( { wanted => $find_func }, $appdir );
     my $abs_appdir = abs_path($appdir);
-    print "appdir: $appdir";
+    print "appdir: $appdir\n";
     print "binaries: \n";
     print join(", ", @binaries);
     print "\nlibraries: \n";
@@ -1441,11 +1456,22 @@ sub adjust_runtime_paths {
             #next if m|$libname|;
             # The abover version caused loader_path not to be set properly in the desktop application
             # apparently due to the path containing "desktop.app"
+
+
             next if m|^$libname|;
-            if ( m|^\s+(\S+).*| && -e $1 ) {
+
+            $modifiedref = $1; 
+            print "Modified ref: $modifiedref\n"; 
+            if ($modifiedref =~ "\@rpath") {
+                print "Modifying libref\n";
+                $modifiedref =~ s/\@rpath/$qtpath/g;
+                print "modifiedref: $modifiedref\n";
+            }
+                
+            if ( m|^\s+(\S+).*| && (-e $1 || -e $modifiedref  )) {
                 my $libref = $1;
                 my ($vol, $dir, $file) = File::Spec->splitpath(exp_path($libref));
-                print "LIB: $libraries{$file}";
+                print "LIB: $libraries{$file}\n";
                 if ( exists $libraries{$file} ) {
                     print"Exists: $libraries{$file} \n";
                     if ( $verbose ) { print "<P>\t*\t$libref\n" }

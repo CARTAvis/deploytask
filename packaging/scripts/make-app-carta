@@ -788,11 +788,12 @@ sub collect_dependencies_work {
             next if $osname eq "linux" && $dir =~ m@^/usr/bin|^/opt/local/bin|^/opt/local/lib@;
             if ( m|\s+(?:\S+ => )?(\S+)| ||  m|(^.*\.framework/.*)| ) {
 
+            
+                $tmpfile = $1;
+                $tmpfile=~ s/://g;
+                my $file = $tmpfile;
                 if ($rpathflag) {
                     $file = $_;
-                }
-                else {
-                    my $file = $1;
                 }
                 if ( basename(abs_path($file)) eq basename(abs_path($orig)) ) {
                     my $file_name = basename(abs_path($orig));

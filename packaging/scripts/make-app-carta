@@ -172,7 +172,7 @@ print "Initial fetch\n";
 print "Template path: $template_path\n";
 if ($osname eq "linux") {
     fetch_git( $output_dir, $template_url, $template_path, $local_template_path,
-           ($osname eq "linux" ? "$distro_name\-$reltype-$version" : '') );
+           ($osname eq "linux" ? "$distro_name\-$version" : '') );
 }
 else {
     $macappdir = ( split '/', $template_path )[ -1 ];
@@ -777,7 +777,7 @@ sub collect_dependencies_work {
 
             if ($rpathflag) {
                 $dir = $qtpath;
-            }            
+            }
 
             ###
             ### ignore direct system dependencies...
@@ -788,7 +788,7 @@ sub collect_dependencies_work {
             next if $osname eq "linux" && $dir =~ m@^/usr/bin|^/opt/local/bin|^/opt/local/lib@;
             if ( m|\s+(?:\S+ => )?(\S+)| ||  m|(^.*\.framework/.*)| ) {
 
-            
+
                 $tmpfile = $1;
                 $tmpfile=~ s/://g;
                 my $file = $tmpfile;
@@ -1461,14 +1461,14 @@ sub adjust_runtime_paths {
 
             next if m|^$libname|;
 
-            $modifiedref = $1; 
-            print "Modified ref: $modifiedref\n"; 
+            $modifiedref = $1;
+            print "Modified ref: $modifiedref\n";
             if ($modifiedref =~ "\@rpath") {
                 print "Modifying libref\n";
                 $modifiedref =~ s/\@rpath/$qtpath/g;
                 print "modifiedref: $modifiedref\n";
             }
-                
+
             if ( m|^\s+(\S+).*| && (-e $1 || -e $modifiedref  )) {
                 my $libref = $1;
                 my ($vol, $dir, $file) = File::Spec->splitpath(exp_path($libref));

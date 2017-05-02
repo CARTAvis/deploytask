@@ -7,13 +7,6 @@
 #### (at that point the 'desktop' executable was renamed to 'CARTA')
 ####
 
-#### Note: Until further notice, a manual modification is currently necessary for the casa-pkg template
-#### 
-#### cd /tmp/casa-pkg/packaging/template/osx/Carta.app/Contents/MacOS
-#### ln -s @@WS@@/Contents/MacOS/CARTA CARTA
-#### rm desktop
-####
-
 # 0. Define the installed location of your Qt 5.7.1 and CARTA source code (for latest html):
 CARTABUILDHOME=~/cartabuild
 qtpath=/Users/ajm/Qt/5.7/clang_64
@@ -46,18 +39,12 @@ for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLi
 
 
 # 2. Download and run the latest make-app-carta script
-curl -O -L https://open-bitbucket.nrao.edu/projects/CASA/repos/casa-pkg/raw/packaging/scripts/make-app-carta
+svn export https://github.com/CARTAvis/deploytask/trunk/make-app-carta
 sed -i '' 's|\/Users\/rpmbuild\/Qt5.7.0\/5.7\/clang_64|'"${qtpath}"'|g' make-app-carta
 chmod 755 make-app-carta
-rm -rf /tmp/casa-pkg 
-rm -rf $packagepath 
-###
-#./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/build/cpp/desktop/CARTA.app
-
-### OR ###  use the 'template' flag if casa-pkg is already downloaded:
-
-./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/build/cpp/desktop/CARTA.app template=/tmp/casa-pkg2/packaging/template/osx/Carta.app
-###
+rm -rf Carta.app
+svn export https://github.com/CARTAvis/deploytask/trunk/Carta.app
+./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/build/cpp/desktop/CARTA.app template=Carta.app
 
 
 # 3. Add  @rpath to desktop executable

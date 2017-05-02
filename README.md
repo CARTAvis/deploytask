@@ -23,6 +23,18 @@ They currently contain:
 3. Make `setupcartavis.sh` obsolete.
 
 
+## New method, thanks to Grimmer's idea:
+
+We put the latest Mac `Carta.app` and the Linux `carta-distro` templates on this repository for now.
+They can be downloaded with the following commands:
+```
+Mac: svn export https://github.com/CARTAvis/deploytask/trunk/Carta.app
+Linux: svn export https://github.com/CARTAvis/deploytask/trunk/carta-distro
+```
+But these commands will be added to the packaging scripts.
+
+Now there will be no need to download the entire casa-pkg template.
+
 # Note:
 After the 28th April 2017, the carta develop branch changed `desktop` to `CARTA`. 
 We need to update the current casa-pkg template for this new change.

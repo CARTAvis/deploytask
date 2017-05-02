@@ -1,0 +1,13 @@
+{
+    "_comment" : "List of plugin directories",
+    "pluginDirs": [
+    "$(APPDIR)/../plugins",
+    "$(APPDIR)/../../../../plugins",
+    "$(HOME)/.cartavis/plugins"
+    ],
+    "hacksEnabled" : "false",
+    "qtDecorations" : "true",
+    "developerLayout" : "false",
+    "disabledPlugins" : ["hpcImgRender","DevIntegration", "CyberSKA","noisepy","casatest1","clock1","tester1","blurpy","qimage", "casaCore-2.0.1", "ImageAnalysis"]
+}
+

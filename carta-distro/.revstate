@@ -1,0 +1,4 @@
+install="rpm"
+version="@@VERSION@@"
+revision="@@SVNVERSION@@"
+url="@@SVNROOT@@"

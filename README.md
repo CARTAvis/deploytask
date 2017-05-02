@@ -22,11 +22,11 @@ They currently contain:
 2. Have the the latest versions of them (without needing modifications) contained in the carta repository instead.
 3. Make `setupcartavis.sh` obsolete.
 
-=======
+
 # Note:
 After the 28th April 2017, the carta develop branch changed `desktop` to `CARTA`. 
 We need to update the current casa-pkg template for this new change.
-Meanwhile we can do it manually with a symbolic link.
+Meanwhile we can do it manually with a symbolic link (Here assuming casa-pkg is downloaded to /tmp/).
 
 For Mac:
 ```
@@ -42,8 +42,8 @@ ln -s @@WS@@/CARTA CARTA
 rm desktop
 ```
 
-Also, make sure the `carta.sh` you are using has update the line `appname=desktop` to `appname=CARTA`
+Also, make sure the `carta.sh` you are using has updated the line `appname=desktop` to `appname=CARTA`
 
 Any branches before 28th April 2017 still use `desktop`
-======
+
 

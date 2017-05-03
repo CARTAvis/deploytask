@@ -34,7 +34,7 @@ do
     shift
 done
 
-appname=desktop
+appname=CARTA
 dirname=`dirname $0`
 
 tmp="${dirname#?}"
@@ -59,7 +59,7 @@ if [ ! -e $HOME/data/ephemerides -o\
 fi
 
 ulimit -n 2048
-export CASARCFILES=$dirname/casarc
+export CASARCFILES=$dirname/bin/casarc
 
 cd $dirname/bin
 #./$appname --html $dirname/VFS/DesktopDevel/desktop/desktopIndex.html --scriptPort 9999  2>&1 &

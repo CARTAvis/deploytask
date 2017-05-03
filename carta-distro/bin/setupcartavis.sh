@@ -36,10 +36,10 @@ if [ ! -d $HOME/.cartavis/log ]; then
 fi
 
 # check that config.json exists
-if [[ ! -f $HOME/.cartavis/config.json || $dirname/config/config.json -nt $HOME/.cartavis/config.json ]]; then
-	echo "copying config.json file to  $HOME/.cartavis directory..."
-	cp $dirname/config/config.json $HOME/.cartavis
-fi
+#if [[ ! -f $HOME/.cartavis/config.json || $dirname/config/config.json -nt $HOME/.cartavis/config.json ]]; then
+#	echo "copying config.json file to  $HOME/.cartavis directory..."
+#	cp $dirname/config/config.json $HOME/.cartavis
+#fi
 
 # check that $HOME/CARTA directory exists
 if [ ! -d $HOME/CARTA ]; then

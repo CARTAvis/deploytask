@@ -1,44 +1,48 @@
 # deploytask
 Temporary repo to put deploy scripts and stuff
 
+# A summary of steps to build and package CARTA
+(Assuming installation of all packages and libraries described on https://github.com/CARTAvis/carta is already done)
+
+1. Export your Qt path e.g. `export PATH=/Qt5.3.2/5.3/gcc_64/bin:$PATH`
+
+2. Download the latest CARTA source code `git clone https://github.com/CARTAvis/carta.git CARTAvis`
+
+3. Build the html part `./CARTAvis/carta/scripts/buildUIfile.sh`
+
+4. Prepare a build directory e.g. `mkdir build && cd build`
+
+5. Run qmake `qmake NOSERVER=1 CARTA_BUILD_TYPE=dev ../CARTAvis/carta -r`
+
+6. Build the code `make -j 4`
+
+7. Download the appropriate packaging script from here e.g `svn export https://github.com/CARTAvis/deploytask/trunk/final_centos7_packaging_steps.sh`
+
+8. Run that script e.g. `chmod 755 final_centos7_packaging_steps.sh && ./final_centos7_packaging_steps.sh`
 
 # Miscellaneous files
-These scripts make use of some miscellaneous files available from the following two archives: 
+These scripts automatically download two archives as follow: 
+1. `measures_data` containing the ephemerides and geodetic files:
+http://www.asiaa.sinica.edu.tw/~ajm/carta/measures_data.tar.gz
 
-For Mac builds: http://www.asiaa.sinica.edu.tw/~ajm/carta/finish.tar.gz
+2. `images` containing a few sample images:
+http://www.asiaa.sinica.edu.tw/~ajm/carta/images.tar.gz
 
-For Linux builds: http://www.asiaa.sinica.edu.tw/~ajm/carta/finish_linux.tar.gz
+They also download and use updated versions of the Mac `Carta.app` and Linux `carta-distro` templates that have been extracted from the original NRAO `casa-pkg` template. 
+The `Carta.app` and `carta-distro` are on this repository.
 
-They currently contain: 
-1. `measures_data` directory containing the ephemerides and geodetic files.
-2. `casarc` file that points towards the measures_data location
-3. Latest `carta.sh`
-4. Latest `setupcartavis.sh`
-
-`casarc`, `carta.sh`, and `setupcartavis.sh`  are slightly different between Mac and Linux.
+The `casarc`, `carta.sh`, and `setupcartavis.sh` files are slightly different between Mac and Linux, and the latest versions have been put inside the appropriate templates for now.
 
 ## To Do:
-1. Unify the `casarc`, `carta.sh`, and `setupcartavis.sh` so that only one version is needed.
-2. Have the the latest versions of them (without needing modifications) contained in the carta repository instead.
-3. Make `setupcartavis.sh` obsolete.
+1. Unify the `casarc`, `carta.sh`, and `setupcartavis.sh` so that only one version is needed between Mac and Linux.
+2. Make `setupcartavis.sh` obsolete.
+3. Unify the CentOS7 and CentOS6 scripts into a single Linux script.
 
-
-## New method, thanks to Grimmer's idea:
-
-We put the latest Mac `Carta.app` and the Linux `carta-distro` templates on this repository for now.
-They can be downloaded with the following commands:
-```
-Mac: svn export https://github.com/CARTAvis/deploytask/trunk/Carta.app
-Linux: svn export https://github.com/CARTAvis/deploytask/trunk/carta-distro
-```
-But these commands will be added to the packaging scripts.
-
-Now there will be no need to download the entire casa-pkg template.
 
 # Note:
 After the 28th April 2017, the carta develop branch changed `desktop` to `CARTA`. 
-We need to update the current casa-pkg template for this new change.
-Meanwhile we can do it manually with a symbolic link (Here assuming casa-pkg is downloaded to /tmp/).
+We need to update the current casa-pkg template for this new change but the separate `Carta.app` and `carta-distro` on this repository contain these changes.
+If you really want to use the `casa-pkg` template, you can make the changes manually with a symbolic link (Here assuming casa-pkg is downloaded to /tmp/).
 
 For Mac:
 ```
@@ -57,5 +61,4 @@ rm desktop
 Also, make sure the `carta.sh` you are using has updated the line `appname=desktop` to `appname=CARTA`
 
 Any branches before 28th April 2017 still use `desktop`
-
 

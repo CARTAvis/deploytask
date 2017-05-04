@@ -12,13 +12,13 @@ Temporary repo to put deploy scripts and stuff
 
 4. Prepare a build directory e.g. `mkdir build && cd build`
 
-5. Run qmake `qmake NOSERVER=1 CARTA_BUILD_TYPE=dev ../CARTAvis/carta -r`
+5. Run the Qt qmake e.g. `qmake NOSERVER=1 CARTA_BUILD_TYPE=dev ../CARTAvis/carta -r`
 
-6. Build the code `make -j 4`
+6. Build the code e.g. `make -j 4`
 
 7. Download the appropriate packaging script from here e.g `svn export https://github.com/CARTAvis/deploytask/trunk/final_centos7_packaging_steps.sh`
 
-8. Run that script e.g. `chmod 755 final_centos7_packaging_steps.sh && ./final_centos7_packaging_steps.sh`
+8. Run that script `chmod 755 final_centos7_packaging_steps.sh && ./final_centos7_packaging_steps.sh`
 
 # Miscellaneous files
 These scripts automatically download two archives as follow: 
@@ -40,8 +40,8 @@ The `casarc`, `carta.sh`, and `setupcartavis.sh` files are slightly different be
 
 
 # Note:
-After the 28th April 2017, the carta develop branch changed `desktop` to `CARTA`. 
-We need to update the current casa-pkg template for this new change but the separate `Carta.app` and `carta-distro` on this repository contain these changes.
+After the 28th April 2017, the carta develop branch changed the name of the main executable. Old executable name: `desktop`. New executable name: `CARTA`. 
+We need to update the current casa-pkg template for this new change but the separate `Carta.app` and `carta-distro` templates on this repository already contain these changes.
 If you really want to use the `casa-pkg` template, you can make the changes manually with a symbolic link (Here assuming casa-pkg is downloaded to /tmp/).
 
 For Mac:
@@ -60,5 +60,5 @@ rm desktop
 
 Also, make sure the `carta.sh` you are using has updated the line `appname=desktop` to `appname=CARTA`
 
-Any branches before 28th April 2017 still use `desktop`
+Any branches before 28th April 2017 still use the old `desktop` name.
 

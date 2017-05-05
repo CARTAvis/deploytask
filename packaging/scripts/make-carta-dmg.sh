@@ -51,7 +51,7 @@ mv $app_path $root_path/Carta
 
 #( cd $root_path/Carta && ln -s /Applications )
 
-cartaver=1.0.0 #$(cat $root_path/Carta/$name/Contents/Resources/VERSION | cut -d ' ' -f 1  | cut -d '.' -f 3 )
+cartaver=0.9.0 #$(cat $root_path/Carta/$name/Contents/Resources/VERSION | cut -d ' ' -f 1  | cut -d '.' -f 3 )
 hdiutil create -srcfolder $root_path/Carta -volname "Carta_${OS_X_VERSION}_${cartaver}" $root_path/c1
 hdiutil convert -format UDRW -o $root_path/c2 $root_path/c1.dmg && rm $root_path/c1.dmg
 #open c2.dmg

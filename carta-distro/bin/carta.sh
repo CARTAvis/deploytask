@@ -42,7 +42,7 @@ if [ "${dirname%$tmp}" != "/" ]; then
 dirname=$PWD/$dirname/
 fi
 
-dirname=$dirname../
+dirname=$dirname/../
 echo "dirname $dirname"
 
 logfilename=$HOME/.cartavis/log/$(date +"%Y_%m_%d").log

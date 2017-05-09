@@ -8,7 +8,7 @@ Temporary repo to put deploy scripts and stuff
 
 2. Download the latest CARTA source code `git clone https://github.com/CARTAvis/carta.git CARTAvis`
 
-3. Build the html part `./CARTAvis/carta/scripts/buildUIfile.sh`
+3. Build the html part `cd CARTAvis/carta/html5/common/skel && generate.py source all && cd ../../../../../`
 
 4. Prepare a build directory e.g. `mkdir build && cd build`
 
@@ -18,7 +18,7 @@ Temporary repo to put deploy scripts and stuff
 
 7. Download the appropriate packaging script from here e.g `svn export https://github.com/CARTAvis/deploytask/trunk/final_centos7_packaging_steps.sh`
 
-8. Run that script `chmod 755 final_centos7_packaging_steps.sh && ./final_centos7_packaging_steps.sh`
+8. Modify paths in the script for your system and run the script `chmod 755 final_centos7_packaging_steps.sh && ./final_centos7_packaging_steps.sh`
 
 # Miscellaneous files
 These scripts automatically download two archives as follow: 

@@ -45,12 +45,14 @@ chrpath -c -r '$ORIGIN/../../lib/:$ORIGIN/../../plugins/CasaImageLoader/' $packa
 cp /usr/lib64/libcfitsio.so $packagepath-$version/lib/
 mv $packagepath-$version/lib/libcfitsio.so $packagepath-$version/lib/libcfitsio.so.4
 
-
 # 4. Copy over the html and qooxdoo
 cp -r $cartapath/carta/html5 $packagepath-$version/etc/
 rm  $packagepath-$version/etc/html5/common/qooxdoo-3.5-sdk
 cp -r $CARTABUILDHOME/CARTAvis-externals/ThirdParty/qooxdoo-3.5-sdk  $packagepath-$version/etc/html5/common/qooxdoo-3.5-sdk
 
+rm -f $packagepath-$version/etc/html5/html5.iml
+rm -f $packagepath-$version/etc/html5/._html5.iml
+rm -f $packagepath-$version/etc/html5/.idea
 
 # 5. Setup geodetic and ephemerides data
 curl -O -L http://www.asiaa.sinica.edu.tw/~ajm/carta/measures_data.tar.gz

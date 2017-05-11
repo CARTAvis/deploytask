@@ -36,9 +36,6 @@ for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLi
 for f in `find . -name "*.dylib"`; do install_name_tool -change libwcs.5.15.dylib  $CARTABUILDHOME/CARTAvis-externals/ThirdParty/wcslib/lib/libwcs.5.15.dylib $f; echo $f; done
 for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $f; done
 
-install_name_tool -change @rpath/QtGui.framework/Versions/5/QtGui @loader_path/QtGui.framework/Versions/5/QtGui $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib
-
-install_name_tool -change @rpath/QtPrintSupport.framework/Versions/5/QtPrintSupport @loader_path/../../../QtPrintSupport.framework/Versions/5/QtPrintSupport $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/qwt.framework/Versions/Current/qwt
 
 # 2. Download and run the latest make-app-carta script
 svn export https://github.com/CARTAvis/deploytask/trunk/make-app-carta
@@ -48,12 +45,16 @@ rm -rf $packagepath
 svn export https://github.com/CARTAvis/deploytask/trunk/Carta.app
 ./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/build/cpp/desktop/CARTA.app template=Carta.app
 
-# 3. Remove .prl files
-for f in `find $packagepath=Contents/Frameworks -name "*.prl"`;
+# 3. Remove .prl files and fix some things
+for f in `find $packagepath/Contents/Frameworks -name "*.prl"`;
 do
  echo $f;
  rm $f;
 done
+
+install_name_tool -change @rpath/QtGui.framework/Versions/5/QtGui @loader_path/QtGui.framework/Versions/5/QtGui $packagepath/Contents/Frameworks/libCartaLib.1.dylib
+
+install_name_tool -change @rpath/QtPrintSupport.framework/Versions/5/QtPrintSupport @loader_path/../../../QtPrintSupport.framework/Versions/5/QtPrintSupport $packagepath/Contents/Frameworks/qwt.framework/Versions/Current/qwt
 
 # 4. Add  @rpath to desktop executable
 install_name_tool -add_rpath @loader_path/../Frameworks $packagepath/Contents/MacOS/CARTA

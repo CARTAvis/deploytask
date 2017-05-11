@@ -80,13 +80,12 @@ rm measures_data.tar.gz
 # 8. Copy over the sample images
 curl -O -L http://www.asiaa.sinica.edu.tw/~ajm/carta/images.tar.gz
 tar -xvf images.tar.gz
-mkdir $packagepath/Contents/Resources/images 
-mv images $packagepath/Contents/Resources/images/
+mv images $packagepath/Contents/Resources/
 rm images.tar.gz
 
 
 # 9. Copy the new app icon
-cp $extra/applet.icns $packagepath/Contents/Resources/
+#cp $extra/applet.icns $packagepath/Contents/Resources/
 
 
 # 10. Fix for QtSql; copy its dylib file to the executable folder

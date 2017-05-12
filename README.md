@@ -8,7 +8,7 @@ Temporary repo to put deploy scripts and stuff
 
 2. Download the latest CARTA source code `git clone https://github.com/CARTAvis/carta.git CARTAvis`
 
-3. Build the html part `cd CARTAvis/carta/html5/common/skel && generate.py source all && cd ../../../../../`
+3. Build the html part `cd CARTAvis/carta/html5/common/skel && generate.py build && cd ../../../../../`
 
 4. Prepare a build directory e.g. `mkdir build && cd build`
 

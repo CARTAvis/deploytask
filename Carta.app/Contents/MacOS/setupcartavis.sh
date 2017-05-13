@@ -36,9 +36,17 @@ if [ ! -d $HOME/.cartavis/log ]; then
 fi
 
 # check that config.json exists
-if [ ! -f $HOME/.cartavis/config.json ]; then
-	echo "copying config.json file to  $HOME/.cartavis directory..."
-	cp $dirname/../Resources/config/config.json $HOME/.cartavis
+#if [ ! -f $HOME/.cartavis/config.json ]; then
+#	echo "copying config.json file to  $HOME/.cartavis directory..."
+#	cp $dirname/../Resources/config/config.json $HOME/.cartavis
+#fi
+
+# Want users to use the internal config.json in Resournces/config/
+# Also if a config.json from a previous version of CARTA is present, it might lead to problems. 
+# Therefore, delete ~/.cartavis/config.json if it is present
+if [ -e $HOME/.cartavis/config.json ]; then
+        echo "Removing old config.json"
+        rm $HOME/.cartavis/config.json
 fi
 
 # check that $HOME/CARTA directory exists

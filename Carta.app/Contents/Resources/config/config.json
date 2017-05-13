@@ -1,0 +1,19 @@
+{
+"pluginDirs":[
+"$(APPDIR)/../Plugins/"
+],
+
+"disabledPlugins" : [
+"PCacheLevelDB"
+],
+"plugins": {
+    "PCacheSqlite3" : {
+        "dbPath": "/tmp/carta_sql_cache"
+    },
+    "PCacheLevelDB" : {
+        "dbPath": "/tmp/carta_leveldb_cache"
+    }
+}
+
+}
+

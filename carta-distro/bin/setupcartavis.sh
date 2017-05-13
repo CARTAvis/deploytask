@@ -40,6 +40,10 @@ fi
 #	echo "copying config.json file to  $HOME/.cartavis directory..."
 #	cp $dirname/config/config.json $HOME/.cartavis
 #fi
+if [ -e $HOME/.cartavis/config.json ]; then
+        echo "Removing old config.json"
+        rm $HOME/.cartavis/config.json
+fi
 
 # check that $HOME/CARTA directory exists
 if [ ! -d $HOME/CARTA ]; then

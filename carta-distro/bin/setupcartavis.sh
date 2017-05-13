@@ -60,7 +60,7 @@ fi
 # check that sample files exists
 if [ ! -d $HOME/CARTA/Images/CubesTest ]; then
     echo "copying sample images to $HOME/CARTA/Images directory ..."
-    cp -R $dirname/etc/images/* $HOME/CARTA/Images
+    cp -R $dirname/../etc/images/* $HOME/CARTA/Images
 fi
 
 # check that $HOME/CARTA/snapshots directory exists

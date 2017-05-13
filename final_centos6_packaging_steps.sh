@@ -74,5 +74,9 @@ mkdir $packagepath-$version/bin/sqldrivers
 cp $qtpath/plugins/sqldrivers/libqsqlite.so $packagepath-$version/bin/sqldrivers
 
 
+# 8. Copy over all Python2.7 libs
+cp /opt/casa/02/lib/libpython2.7.so $packagepath-$version/lib/
+cp -r /opt/casa/02/lib/pythno2.7 $packagepath-$version/lib/
+
 # Finish
 

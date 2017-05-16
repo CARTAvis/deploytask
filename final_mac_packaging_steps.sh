@@ -2,14 +2,14 @@
 ####
 #### Script to be run after CARTA 'make' for MacOS/OSX
 #### Please check every line carefully, including commented-out lines.
-#### 
+####
 #### For CARTA develop branch after 28 May 2017.
 #### (at that point the 'desktop' executable was renamed to 'CARTA')
 ####
 
-# 0. Define the installed location of your Qt 5.7.1 and CARTA source code (for latest html):
+# 0. Define the installed location of your Qt 5.8.0 and CARTA source code (for latest html):
 CARTABUILDHOME=~/cartabuild
-qtpath=/Users/ajm/Qt/5.7/clang_64
+qtpath=/Users/ajm/Qt/5.8/clang_64
 cartapath=/Users/ajm/cartabuild/CARTAvis
 packagepath=/tmp/Carta.app
 version=8.8.9  ## A version number to be put on the dmg
@@ -39,9 +39,9 @@ for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLi
 
 # 2. Download and run the latest make-app-carta script
 svn export https://github.com/CARTAvis/deploytask/trunk/make-app-carta
-sed -i '' 's|\/Users\/rpmbuild\/Qt5.7.0\/5.7\/clang_64|'"${qtpath}"'|g' make-app-carta
+sed -i '' 's|\/Users\/rpmbuild\/Qt5.8.0\/5.8\/clang_64|'"${qtpath}"'|g' make-app-carta
 chmod 755 make-app-carta
-rm -rf $packagepath 
+rm -rf $packagepath
 svn export https://github.com/CARTAvis/deploytask/trunk/Carta.app
 ./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/build/cpp/desktop/CARTA.app template=Carta.app
 
@@ -99,7 +99,7 @@ cp $qtpath/plugins/sqldrivers/libqsqlite.dylib $packagepath/Contents/MacOS/sqldr
 
 # 12. Download and run the dmg creation script
 ###
-### Until further notice, need to add the following to the script if using MacOS 10.12 Sierra 
+### Until further notice, need to add the following to the script if using MacOS 10.12 Sierra
 ###  "16")
 ###      readonly OS_X_VERSION="10.12"
 ###      ;;
@@ -107,4 +107,3 @@ cp $qtpath/plugins/sqldrivers/libqsqlite.dylib $packagepath/Contents/MacOS/sqldr
 #curl -O -L https://open-bitbucket.nrao.edu/projects/CASA/repos/casa-pkg/raw/packaging/scripts/make-carta-dmg.sh
 #chmod 755 make-carta-dmg.sh
 #./make-carta-dmg.sh /tmp/CARTA_$version.app
-

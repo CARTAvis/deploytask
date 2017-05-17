@@ -233,7 +233,7 @@ do {
     @scan_copies = ( );
 
     ++$scan_count;
-    scan_application( $app_dir, "rescanning application (pass $scan_count)...", 1 );
+    scan_application( $app_dir, "rescanning application (pass $scan_count)...", 1 ); ##真的有rescan
     unless ( $quiet ) { print "\nfound load-time dependencies in ", scalar(keys %libraries_dirs)," directories...\n"; }
 
     print "grimmer collect 4444444222222";
@@ -829,6 +829,29 @@ sub collect_dependencies_work {
                 if ($rpathflag) {
                     $file = $_;
                 }
+
+                #### 這一行有問題的 !!!!
+                ### Use of uninitialized value $_[0] in substitution (s///) at /System/Library/Perl/5.18/File/Basename.pm line 341.
+                ### fileparse(): need a valid pathname at ./make-app-carta line 832.
+
+                print "grimmer file1:$file\n";
+
+                print "grimmer file2:$orig\n";
+
+                $xx = abs_path($file);
+                print "grimmer file1-2:$xx\n";
+
+                $yy = abs_path($orig);
+                print "grimmer file2-2:$yy\n";
+
+
+                $$xxx = basename(abs_path($file);
+                print "grimmer file3:$$xxx\n";
+
+                $$yyy = basename(abs_path($orig);
+                print "grimmer file3-2:$$yyy\n";
+
+
                 if ( basename(abs_path($file)) eq basename(abs_path($orig)) ) {
                     my $file_name = basename(abs_path($orig));
                     ###

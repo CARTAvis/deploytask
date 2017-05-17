@@ -7,12 +7,33 @@
 #### (at that point the 'desktop' executable was renamed to 'CARTA')
 ####
 
+if [ -z ${CARTABUILDHOME+x} ]; then
+	CARTABUILDHOME=~/cartabuild
+else
+fi
+
+## grimmer: rename cartapath to cartawork, also change its defintion to the parent folder of source code path, not source code path itself
+# , also change to $CARTABUILDHOME/CARTAvis-externals to $cartawork/CARTAvis-externals, therefore CARTABUILDHOME can be arbitrary,
+# the original implies and limits that
+# CARTABUILDHOME/source_code_fodler
+
+if [ -z ${cartawork+x} ]; then
+	cartawork=~/cartabuild
+else
+fi
+
 # 0. Define the installed location of your Qt 5.8.0 and CARTA source code (for latest html):
-CARTABUILDHOME=~/cartabuild
-qtpath=/Users/ajm/Qt/5.8/clang_64
-cartapath=/Users/ajm/cartabuild/CARTAvis
+if [ -z ${QT5PATH+x} ]; then
+	echo "QT5PATH is unset";
+	qtpath=/Users/ajm/Qt/5.7/clang_64
+else
+	qtpath=$QT5PATH
+fi
 packagepath=/tmp/Carta.app
 version=8.8.9  ## A version number to be put on the dmg
+
+# cartawork=/Users/ajm/cartabuild/CARTAvis
+
 
 # 1. Fix paths (Based on Ville's NRAO instructions)
 mkdir $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks
@@ -21,8 +42,8 @@ cd $CARTABUILDHOME/build
 cp ./cpp/core/libcore.1.dylib $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/
 cp ./cpp/CartaLib/libCartaLib.1.dylib $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/
 
-install_name_tool -change qwt.framework/Versions/6/qwt $CARTABUILDHOME/CARTAvis-externals/ThirdParty/qwt-6.1.2/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/MacOS/CARTA
-install_name_tool -change qwt.framework/Versions/6/qwt $CARTABUILDHOME/CARTAvis-externals/ThirdParty/qwt-6.1.2/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib
+install_name_tool -change qwt.framework/Versions/6/qwt $cartawork/CARTAvis-externals/ThirdParty/qwt-6.1.2/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/MacOS/CARTA
+install_name_tool -change qwt.framework/Versions/6/qwt $cartawork/CARTAvis-externals/ThirdParty/qwt-6.1.2/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib
 install_name_tool -change libplugin.dylib $CARTABUILDHOME/build/cpp/plugins/CasaImageLoader/libplugin.dylib $CARTABUILDHOME/build/cpp/plugins/ImageStatistics/libplugin.dylib
 install_name_tool -change libcore.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib $CARTABUILDHOME/build/cpp/plugins/ImageStatistics/libplugin.dylib
 
@@ -33,7 +54,7 @@ install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/build/cpp/desktop
 
 for f in `find . -name libplugin.dylib`; do install_name_tool -change libcore.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib $f; done
 for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $f; done
-for f in `find . -name "*.dylib"`; do install_name_tool -change libwcs.5.15.dylib  $CARTABUILDHOME/CARTAvis-externals/ThirdParty/wcslib/lib/libwcs.5.15.dylib $f; echo $f; done
+for f in `find . -name "*.dylib"`; do install_name_tool -change libwcs.5.15.dylib  $cartawork/CARTAvis-externals/ThirdParty/wcslib/lib/libwcs.5.15.dylib $f; echo $f; done
 for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $f; done
 
 
@@ -66,7 +87,7 @@ cp $qtpath/plugins/platforms/libqcocoa.dylib $packagepath/Contents/MacOS/platfor
 
 
 # 6. Copy the html to the application directory
-cp -r $cartapath/carta/VFS/DesktopDevel $packagepath/Contents/Resources/html
+cp -r $cartawork/CARTAvis/carta/VFS/DesktopDevel $packagepath/Contents/Resources/html
 
 
 # 7. Setup geodetic and ephemerides data in the measures_directory

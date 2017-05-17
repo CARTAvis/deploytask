@@ -274,7 +274,19 @@ do {
         foreach $dep ( keys %$ref ) {
             my $destfile = $dep;
 
+
             print "grimmer copy, dir:$libdir;dest:$destfile\n";
+
+            # 記得還有另一個問題,
+
+            # 3. There is an exception case, Qt5.7 will produce a libwcs.dylib
+            # (before, always "libwcs.5.15.dylib) and its the result of "otool -L" will include libwcs.5.15.dylib, therefore some error happen, so I just workaround as below
+            #   if ($combine == "libwcs.5.15.dylib"){
+            #                         print "ignore libwcs.5.15.dylib/";
+
+            # grimmer copy, dir:libwcs.5.15.dylib;dest:
+            #dependency libwcs.5.15.dylib/ does NOT exist...  at ./make-app-carta line 297. die
+
             ###
             ### stored frameworks look like:
             ###
@@ -294,7 +306,7 @@ do {
                 if ( $ignore_missing_dep ) {
                     unless ( $quiet ) { print "warning: dependency $libdir/$destfile does NOT exist\n" }
                 } else {
-                    die "dependency $libdir/$destfile does NOT exist... $initial";
+                    # die "dependency $libdir/$destfile does NOT exist... $initial";
                 }
 
             } else {

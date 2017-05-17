@@ -788,24 +788,24 @@ sub collect_dependencies_work {
                 $dir = $qtpath;
             }
 
-            print "grimmer saveFile orig2:";
+            print "grimmer saveFile orig2:\n";
 
             ###
             ### ignore direct system dependencies...
             ###
             next if $osname eq "darwin" && $dir =~ m@^(?:/usr/lib|/System)@;
 
-            print "grimmer saveFile orig2-2:";
+            print "grimmer saveFile orig2-2:\n";
 
             ### nrao sysadmins like to install things in /opt/local
             ### and make them available in an ad hoc fashion...
             next if $osname eq "linux" && $dir =~ m@^/usr/bin|^/opt/local/bin|^/opt/local/lib@;
 
-            print "grimmer saveFile orig2-3:";
+            print "grimmer saveFile orig2-3:\n";
 
             if ( m|\s+(?:\S+ => )?(\S+)| ||  m|(^.*\.framework/.*)| ) {
 
-                print "grimmer saveFile orig3";
+                print "grimmer saveFile orig3\n";
 
                 $tmpfile = $1;
                 $tmpfile=~ s/://g;
@@ -828,7 +828,7 @@ sub collect_dependencies_work {
                     if ( ! $quiet && $final_pass ) { print "\tskipping self-reference to $file_name\n" }
                     ### the $final_pass flag signals the final scan where dependencies are tallied, using
                     ### it in this conditional prevents notifying the user of self-references twice...
-                    print "grimmer saveFile next";
+                    print "grimmer saveFile next\n";
 
                     next;
                 }
@@ -851,10 +851,10 @@ sub collect_dependencies_work {
                 my $subpath = $file;
                 $subpath =~ s|^$dir/?||;
 
-                print "grimmer saveFile:$file";
+                print "grimmer saveFile:$file\n";
 
                 unless ( exists $ref->{$subpath} ) {
-                    print "grimmer saveFile:$subpath";
+                    print "grimmer saveFile:$subpath\n";
                     $ref->{$subpath} = 1;
                 } elsif ( $recursive ) {
                     if ( $verbose ) {
@@ -865,12 +865,12 @@ sub collect_dependencies_work {
                         my $str = sprintf( "%-$longest_line".'s', $file );
                         print "\r\t<R> $str";
                     }
-                    print "grimmer saveFile resursive:$subpath";
+                    print "grimmer saveFile resursive:$subpath\n";
 
                     collect_dependencies_work($been_there,$file,$recursive);
                 }
             } else {
-                print "grimmer saveFile orig3 fail";
+                print "grimmer saveFile orig3 fail\n";
             }
         }
     }

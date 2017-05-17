@@ -27,6 +27,7 @@ if [ -z ${QT5PATH+x} ]; then
 	qtpath=/Users/ajm/Qt/5.7/clang_64
 else
 	qtpath=$QT5PATH
+	# /usr/local/Cellar/qt/5.8.0_2
 fi
 packagepath=/tmp/Carta.app
 version=8.8.9  ## A version number to be put on the dmg
@@ -58,12 +59,15 @@ for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLi
 
 
 # 2. Download and run the latest make-app-carta script
-svn export https://github.com/CARTAvis/deploytask/trunk/make-app-carta
-sed -i '' 's|\/Users\/rpmbuild\/Qt5.8.0\/5.8\/clang_64|'"${qtpath}"'|g' make-app-carta
+# svn export https://github.com/CARTAvis/deploytask/trunk/make-app-carta
+sed -i '' 's|\/Users\/rpmbuild\/Qt5.7.0\/5.7\/clang_64|'"${qtpath}"'|g' make-app-carta
 chmod 755 make-app-carta
 rm -rf $packagepath
 svn export https://github.com/CARTAvis/deploytask/trunk/Carta.app
+echo "make-app-carta111111"
 ./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/cpp/desktop/CARTA.app template=Carta.app
+
+echo "make-app-carta222222"
 
 # 3. Remove .prl files and fix some things
 for f in `find $packagepath/Contents/Frameworks -name "*.prl"`;

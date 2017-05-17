@@ -48,7 +48,7 @@ $branch='release';
 @prefix = ( );
 $version = '';
 $reltype = '';
-$qtpath="/Users/ajm/Qt/5.7/clang_64/lib";
+$qtpath="/Users/rpmbuild/Qt5.7.0/5.7/clang_64/lib";
 
 print "grimmer qt!!!!!!!!!!!!!!:$qtpath\n";
 

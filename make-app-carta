@@ -190,7 +190,9 @@ print "app_dir: $app_dir\n";
 fill_stubs( $app_dir, \&copy_file, "filling explicit stubs" );
 
 ## scan for dependencies and discover prefix...
+print "grimmer collect 111111";
 scan_application( $app_dir, "initial scan of application..." );
+print "grimmer collect 2222222";
 
 unless ( $quiet ) { print "\nfound load-time dependencies in ", scalar(keys %libraries_dirs)," directories...\n"; }
 
@@ -221,12 +223,22 @@ $scan_count = 0;
 
 unless ( $quiet ) { print "\nbeginning multiple passes at resolving remaining dependencies...\n" }
 
+print "grimmer collect 33333333";
+
+
 do {
+
+    print "grimmer collect 4444444";
+
     @scan_copies = ( );
 
     ++$scan_count;
     scan_application( $app_dir, "rescanning application (pass $scan_count)...", 1 );
     unless ( $quiet ) { print "\nfound load-time dependencies in ", scalar(keys %libraries_dirs)," directories...\n"; }
+
+    print "grimmer collect 4444444222222";
+    $nnn = scalar(keys %libraries_dirs);
+    print "grimmer collect 4444444222222:$nnn\n";
 
     ###
     ### print out dependencies for user to check...
@@ -247,10 +259,10 @@ do {
     }
     unless( $quiet ) { print "copying dependencies to $library_destination ...\n" }
 
-    print "grimmer copy0 \n";
+    print "grimmer collect copy0 \n";
 
     foreach $libdir ( keys %libraries_dirs ) {
-        print "<<<>>>> $libdir\n";
+        print "grimmer collect 5<<<>>>> $libdir\n";
         my $ref = $libraries_dirs{$libdir};
         ###
         ### throw away dependencies to obvious system areas...
@@ -291,7 +303,11 @@ do {
             }
         }
     }
+
+    print "grimmer collect copy09999 \n";
+
 } until ( scalar(@scan_copies) == 0 );
+print "grimmer collect 888888888 \n";
 
 unless( $quiet ) { print "resolving links to outside of application directory...\n" }
 resolve_external_links( "$distribution_directory" );
@@ -848,13 +864,16 @@ sub collect_dependencies_work {
                     $main::libraries_dirs{$dir} = { };
                 }
                 my $ref = $main::libraries_dirs{$dir};
+
+                print "grimmer saveFile0, dir:$dir;file:$file\n";
+
                 my $subpath = $file;
                 $subpath =~ s|^$dir/?||;
 
-                print "grimmer saveFile:$file\n";
+                print "grimmer saveFile:$subpath \n";
 
                 unless ( exists $ref->{$subpath} ) {
-                    print "grimmer saveFile:$subpath\n";
+                    print "grimmer saveFile2!! \n";
                     $ref->{$subpath} = 1;
                 } elsif ( $recursive ) {
                     if ( $verbose ) {
@@ -865,7 +884,7 @@ sub collect_dependencies_work {
                         my $str = sprintf( "%-$longest_line".'s', $file );
                         print "\r\t<R> $str";
                     }
-                    print "grimmer saveFile resursive:$subpath\n";
+                    print "grimmer saveFile resursive:$subpath \n";
 
                     collect_dependencies_work($been_there,$file,$recursive);
                 }

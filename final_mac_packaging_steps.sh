@@ -8,14 +8,15 @@
 ####
 
 if [ -z ${CARTABUILDHOME+x} ]; then
-	CARTABUILDHOME=~/cartabuild
+	CARTABUILDHOME=~/cartabuild/build
 else
 fi
 
 ## grimmer: rename cartapath to cartawork, also change its defintion to the parent folder of source code path, not source code path itself
 # , also change to $CARTABUILDHOME/CARTAvis-externals to $cartawork/CARTAvis-externals, therefore CARTABUILDHOME can be arbitrary,
-# the original implies and limits that
-# CARTABUILDHOME/source_code_fodler
+# the original implies and limits that the source_code and build should be the same level
+# ../build/
+# ../source_code_fodler/
 
 if [ -z ${cartawork+x} ]; then
 	cartawork=~/cartabuild
@@ -36,26 +37,26 @@ version=8.8.9  ## A version number to be put on the dmg
 
 
 # 1. Fix paths (Based on Ville's NRAO instructions)
-mkdir $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks
-cd $CARTABUILDHOME/build
+mkdir $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks
+cd $CARTABUILDHOME
 
-cp ./cpp/core/libcore.1.dylib $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/
-cp ./cpp/CartaLib/libCartaLib.1.dylib $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/
+cp ./cpp/core/libcore.1.dylib $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/
+cp ./cpp/CartaLib/libCartaLib.1.dylib $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/
 
-install_name_tool -change qwt.framework/Versions/6/qwt $cartawork/CARTAvis-externals/ThirdParty/qwt-6.1.2/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/MacOS/CARTA
-install_name_tool -change qwt.framework/Versions/6/qwt $cartawork/CARTAvis-externals/ThirdParty/qwt-6.1.2/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib
-install_name_tool -change libplugin.dylib $CARTABUILDHOME/build/cpp/plugins/CasaImageLoader/libplugin.dylib $CARTABUILDHOME/build/cpp/plugins/ImageStatistics/libplugin.dylib
-install_name_tool -change libcore.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib $CARTABUILDHOME/build/cpp/plugins/ImageStatistics/libplugin.dylib
+install_name_tool -change qwt.framework/Versions/6/qwt $cartawork/CARTAvis-externals/ThirdParty/qwt-6.1.2/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/MacOS/CARTA
+install_name_tool -change qwt.framework/Versions/6/qwt $cartawork/CARTAvis-externals/ThirdParty/qwt-6.1.2/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib
+install_name_tool -change libplugin.dylib $CARTABUILDHOME/cpp/plugins/CasaImageLoader/libplugin.dylib $CARTABUILDHOME/cpp/plugins/ImageStatistics/libplugin.dylib
+install_name_tool -change libcore.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib $CARTABUILDHOME/cpp/plugins/ImageStatistics/libplugin.dylib
 
-install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $CARTABUILDHOME/build/cpp/plugins/ImageStatistics/libplugin.dylib
-install_name_tool -change libcore.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/MacOS/CARTA
-install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/MacOS/CARTA
-install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib
+install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $CARTABUILDHOME/cpp/plugins/ImageStatistics/libplugin.dylib
+install_name_tool -change libcore.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/MacOS/CARTA
+install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/MacOS/CARTA
+install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib
 
-for f in `find . -name libplugin.dylib`; do install_name_tool -change libcore.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib $f; done
-for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $f; done
+for f in `find . -name libplugin.dylib`; do install_name_tool -change libcore.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib $f; done
+for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $f; done
 for f in `find . -name "*.dylib"`; do install_name_tool -change libwcs.5.15.dylib  $cartawork/CARTAvis-externals/ThirdParty/wcslib/lib/libwcs.5.15.dylib $f; echo $f; done
-for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $f; done
+for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $f; done
 
 
 # 2. Download and run the latest make-app-carta script
@@ -64,7 +65,7 @@ sed -i '' 's|\/Users\/rpmbuild\/Qt5.8.0\/5.8\/clang_64|'"${qtpath}"'|g' make-app
 chmod 755 make-app-carta
 rm -rf $packagepath
 svn export https://github.com/CARTAvis/deploytask/trunk/Carta.app
-./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/build/cpp/desktop/CARTA.app template=Carta.app
+./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/cpp/desktop/CARTA.app template=Carta.app
 
 # 3. Remove .prl files and fix some things
 for f in `find $packagepath/Contents/Frameworks -name "*.prl"`;

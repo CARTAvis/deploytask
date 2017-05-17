@@ -9,7 +9,6 @@
 
 if [ -z ${CARTABUILDHOME+x} ]; then
 	CARTABUILDHOME=~/cartabuild/build
-else
 fi
 
 ## grimmer: rename cartapath to cartawork, also change its defintion to the parent folder of source code path, not source code path itself
@@ -20,7 +19,6 @@ fi
 
 if [ -z ${cartawork+x} ]; then
 	cartawork=~/cartabuild
-else
 fi
 
 # 0. Define the installed location of your Qt 5.8.0 and CARTA source code (for latest html):

@@ -845,6 +845,17 @@ sub collect_dependencies_work {
                 print "grimmer file2-2:$yy\n";
 
 
+                if ($xx eq "" || $yy eq "") {
+                    print "invalid abs_file\n";
+
+                    next;
+                }
+
+                if ($yy eq "") {
+                    print "invalid abs_orig\n";
+
+                    next;
+                }
 
                 $xxx = basename(abs_path($file));
                 print "grimmer file3:$$xxx\n";

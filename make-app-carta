@@ -8,6 +8,9 @@
 ###     osx: make-app -v -ni ws=trunk arch=darwin   out=/tmp
 ###   linux: make-app        ws=trunk version=4.5.0 out=tmp type=test
 ###
+
+print "grimmer qt0!!!!!!!!!\n";
+
 $longest_line = 0;
 
 use File::Basename;
@@ -45,7 +48,9 @@ $branch='release';
 @prefix = ( );
 $version = '';
 $reltype = '';
-$qtpath="/Users/rpmbuild/Qt5.7.0/5.7/clang_64/lib";
+$qtpath="/Users/ajm/Qt/5.7/clang_64/lib";
+
+print "grimmer qt!!!!!!!!!!!!!!:$qtpath\n";
 
 %exclude = ( );
 
@@ -254,6 +259,8 @@ do {
         ###
         foreach $dep ( keys %$ref ) {
             my $destfile = $dep;
+
+            print "grimmer copy, dir:$libdir;dest:$destfile\n";
             ###
             ### stored frameworks look like:
             ###

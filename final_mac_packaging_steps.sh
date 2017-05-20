@@ -22,12 +22,12 @@ if [ -z ${cartawork+x} ]; then
 fi
 
 # 0. Define the installed location of your Qt 5.8.0 and CARTA source code (for latest html):
+#TODO: remove qtpath and all use QT5PATH
 if [ -z ${QT5PATH+x} ]; then
 	echo "QT5PATH is unset";
-	qtpath=/Users/ajm/Qt/5.7/clang_64
+	export qtpath=/Users/ajm/Qt/5.7/clang_64
 else
-	qtpath=$QT5PATH
-	# /usr/local/Cellar/qt/5.8.0_2
+	export qtpath=$QT5PATH
 fi
 packagepath=/tmp/Carta.app
 version=8.8.9  ## A version number to be put on the dmg
@@ -61,7 +61,7 @@ for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLi
 # 2. Download and run the latest make-app-carta script
 # svn export https://github.com/CARTAvis/deploytask/trunk/make-app-carta
 curl -O https://raw.githubusercontent.com/CARTAvis/deploytask/Qt5.8.0/make-app-carta
-sed -i '' 's|\/Users\/rpmbuild\/Qt5.7.0\/5.7\/clang_64|'"${qtpath}"'|g' make-app-carta
+#sed -i '' 's|\/Users\/rpmbuild\/Qt5.7.0\/5.7\/clang_64|'"${qtpath}"'|g' make-app-carta
 chmod 755 make-app-carta
 rm -rf $packagepath
 svn export https://github.com/CARTAvis/deploytask/trunk/Carta.app

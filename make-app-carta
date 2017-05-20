@@ -8,9 +8,6 @@
 ###     osx: make-app -v -ni ws=trunk arch=darwin   out=/tmp
 ###   linux: make-app        ws=trunk version=4.5.0 out=tmp type=test
 ###
-
-print "grimmer qt0!!!!!!!!!\n";
-
 $longest_line = 0;
 
 use File::Basename;
@@ -49,8 +46,6 @@ $branch='release';
 $version = '';
 $reltype = '';
 $qtpath="/Users/rpmbuild/Qt5.7.0/5.7/clang_64/lib";
-
-print "grimmer qt!!!!!!!!!!!!!!:$qtpath\n";
 
 %exclude = ( );
 
@@ -190,9 +185,7 @@ print "app_dir: $app_dir\n";
 fill_stubs( $app_dir, \&copy_file, "filling explicit stubs" );
 
 ## scan for dependencies and discover prefix...
-print "grimmer collect 111111";
 scan_application( $app_dir, "initial scan of application..." );
-print "grimmer collect 2222222";
 
 unless ( $quiet ) { print "\nfound load-time dependencies in ", scalar(keys %libraries_dirs)," directories...\n"; }
 
@@ -223,22 +216,12 @@ $scan_count = 0;
 
 unless ( $quiet ) { print "\nbeginning multiple passes at resolving remaining dependencies...\n" }
 
-print "grimmer collect 33333333";
-
-
 do {
-
-    print "grimmer collect 4444444";
-
     @scan_copies = ( );
 
     ++$scan_count;
-    scan_application( $app_dir, "rescanning application (pass $scan_count)...", 1 ); ##真的有rescan
+    scan_application( $app_dir, "rescanning application (pass $scan_count)...", 1 );
     unless ( $quiet ) { print "\nfound load-time dependencies in ", scalar(keys %libraries_dirs)," directories...\n"; }
-
-    print "grimmer collect 4444444222222";
-    $nnn = scalar(keys %libraries_dirs);
-    print "grimmer collect 4444444222222:$nnn\n";
 
     ###
     ### print out dependencies for user to check...
@@ -259,10 +242,8 @@ do {
     }
     unless( $quiet ) { print "copying dependencies to $library_destination ...\n" }
 
-    print "grimmer collect copy0 \n";
-
     foreach $libdir ( keys %libraries_dirs ) {
-        print "grimmer collect 5<<<>>>> $libdir\n";
+        print "<<<>>>> $libdir\n";
         my $ref = $libraries_dirs{$libdir};
         ###
         ### throw away dependencies to obvious system areas...
@@ -273,20 +254,6 @@ do {
         ###
         foreach $dep ( keys %$ref ) {
             my $destfile = $dep;
-
-
-            print "grimmer copy, dir:$libdir;dest:$destfile\n";
-
-            # 記得還有另一個問題,
-
-            # 3. There is an exception case, Qt5.7 will produce a libwcs.dylib
-            # (before, always "libwcs.5.15.dylib) and its the result of "otool -L" will include libwcs.5.15.dylib, therefore some error happen, so I just workaround as below
-            #   if ($combine == "libwcs.5.15.dylib"){
-            #                         print "ignore libwcs.5.15.dylib/";
-
-            # grimmer copy, dir:libwcs.5.15.dylib;dest:
-            #dependency libwcs.5.15.dylib/ does NOT exist...  at ./make-app-carta line 297. die
-
             ###
             ### stored frameworks look like:
             ###
@@ -306,7 +273,7 @@ do {
                 if ( $ignore_missing_dep ) {
                     unless ( $quiet ) { print "warning: dependency $libdir/$destfile does NOT exist\n" }
                 } else {
-                    # die "dependency $libdir/$destfile does NOT exist... $initial";
+                    die "dependency $libdir/$destfile does NOT exist... $initial";
                 }
 
             } else {
@@ -315,11 +282,7 @@ do {
             }
         }
     }
-
-    print "grimmer collect copy09999 \n";
-
 } until ( scalar(@scan_copies) == 0 );
-print "grimmer collect 888888888 \n";
 
 unless( $quiet ) { print "resolving links to outside of application directory...\n" }
 resolve_external_links( "$distribution_directory" );
@@ -816,24 +779,15 @@ sub collect_dependencies_work {
                 $dir = $qtpath;
             }
 
-            print "grimmer saveFile orig2:\n";
-
             ###
             ### ignore direct system dependencies...
             ###
             next if $osname eq "darwin" && $dir =~ m@^(?:/usr/lib|/System)@;
-
-            print "grimmer saveFile orig2-2:\n";
-
             ### nrao sysadmins like to install things in /opt/local
             ### and make them available in an ad hoc fashion...
             next if $osname eq "linux" && $dir =~ m@^/usr/bin|^/opt/local/bin|^/opt/local/lib@;
-
-            print "grimmer saveFile orig2-3:\n";
-
             if ( m|\s+(?:\S+ => )?(\S+)| ||  m|(^.*\.framework/.*)| ) {
 
-                print "grimmer saveFile orig3\n";
 
                 $tmpfile = $1;
                 $tmpfile=~ s/://g;
@@ -841,41 +795,6 @@ sub collect_dependencies_work {
                 if ($rpathflag) {
                     $file = $_;
                 }
-
-                #### 這一行有問題的 !!!!
-                ### Use of uninitialized value $_[0] in substitution (s///) at /System/Library/Perl/5.18/File/Basename.pm line 341.
-                ### fileparse(): need a valid pathname at ./make-app-carta line 832.
-
-                print "grimmer file1:$file\n";
-
-                print "grimmer file2:$orig\n";
-
-                $xx = abs_path($file);
-                print "grimmer file1-2:$xx\n";
-
-                $yy = abs_path($orig);
-                print "grimmer file2-2:$yy\n";
-
-
-                if ($xx eq "" || $yy eq "") {
-                    print "invalid abs_file\n";
-
-                    next;
-                }
-
-                if ($yy eq "") {
-                    print "invalid abs_orig\n";
-
-                    next;
-                }
-
-                $xxx = basename(abs_path($file));
-                print "grimmer file3:$$xxx\n";
-
-                $yyy = basename(abs_path($orig));
-                print "grimmer file3-2:$$yyy\n";
-
-
                 if ( basename(abs_path($file)) eq basename(abs_path($orig)) ) {
                     my $file_name = basename(abs_path($orig));
                     ###
@@ -891,8 +810,6 @@ sub collect_dependencies_work {
                     if ( ! $quiet && $final_pass ) { print "\tskipping self-reference to $file_name\n" }
                     ### the $final_pass flag signals the final scan where dependencies are tallied, using
                     ### it in this conditional prevents notifying the user of self-references twice...
-                    print "grimmer saveFile next\n";
-
                     next;
                 }
 
@@ -911,16 +828,10 @@ sub collect_dependencies_work {
                     $main::libraries_dirs{$dir} = { };
                 }
                 my $ref = $main::libraries_dirs{$dir};
-
-                print "grimmer saveFile0, dir:$dir;file:$file\n";
-
                 my $subpath = $file;
                 $subpath =~ s|^$dir/?||;
 
-                print "grimmer saveFile:$subpath \n";
-
                 unless ( exists $ref->{$subpath} ) {
-                    print "grimmer saveFile2!! \n";
                     $ref->{$subpath} = 1;
                 } elsif ( $recursive ) {
                     if ( $verbose ) {
@@ -931,12 +842,8 @@ sub collect_dependencies_work {
                         my $str = sprintf( "%-$longest_line".'s', $file );
                         print "\r\t<R> $str";
                     }
-                    print "grimmer saveFile resursive:$subpath \n";
-
                     collect_dependencies_work($been_there,$file,$recursive);
                 }
-            } else {
-                print "grimmer saveFile orig3 fail\n";
             }
         }
     }

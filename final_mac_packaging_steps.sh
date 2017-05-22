@@ -111,16 +111,11 @@ rm images.tar.gz
 # 9. Copy the new app icon
 #cp $extra/applet.icns $packagepath/Contents/Resources/
 
-
 # 10. Fix for QtSql; copy its dylib file to the executable folder
 mkdir $packagepath/Contents/MacOS/sqldrivers
 cp $qtpath/plugins/sqldrivers/libqsqlite.dylib $packagepath/Contents/MacOS/sqldrivers/
 
-
-# 11. Rename Carta.app inot CARTA.app
-mv /tmp/Carta.app /tmp/CARTA_$version.app
-
-# 12. Fix the homebrew'qt issue which uses no-rpath
+# 11. Fix the homebrew'qt issue which uses no-rpath
 echo "qt57homebrew:"$qt57brewrealpath
 if [ ${qt57brewrealpath+x} ]; then
 	echo "Fix the homebrew'qt issue which uses no-rpath"
@@ -129,6 +124,9 @@ if [ ${qt57brewrealpath+x} ]; then
   install_name_tool -change $qt57brewrealpath/lib/QtPrintSupport.framework/Versions/5/QtPrintSupport @rpath/QtPrintSupport.framework/Versions/5/QtPrintSupport $packagepath/Contents/MacOS/platforms/libqcocoa.dylib
   install_name_tool -change $qt57brewrealpath/lib/QtWidgets.framework/Versions/5/QtWidgets @rpath/QtWidgets.framework/Versions/5/QtWidgets $packagepath/Contents/MacOS/platforms/libqcocoa.dylib
 fi
+
+# 12. Rename Carta.app inot CARTA.app
+mv /tmp/Carta.app /tmp/CARTA_$version.app
 
 # 13. Download and run the dmg creation script
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/fromCASAPackagingRepo/packaging/scripts/make-carta-dmg.sh

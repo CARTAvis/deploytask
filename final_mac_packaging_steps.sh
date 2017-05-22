@@ -42,8 +42,8 @@ cd $CARTABUILDHOME
 cp ./cpp/core/libcore.1.dylib $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/
 cp ./cpp/CartaLib/libCartaLib.1.dylib $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/
 
-install_name_tool -change qwt.framework/Versions/6/qwt $cartawork/CARTAvis-externals/ThirdParty/qwt-6.1.2/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/MacOS/CARTA
-install_name_tool -change qwt.framework/Versions/6/qwt $cartawork/CARTAvis-externals/ThirdParty/qwt-6.1.2/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib
+install_name_tool -change qwt.framework/Versions/6/qwt $cartawork/CARTAvis-externals/ThirdParty/qwt-6.1.3/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/MacOS/CARTA
+install_name_tool -change qwt.framework/Versions/6/qwt $cartawork/CARTAvis-externals/ThirdParty/qwt-6.1.3/lib/qwt.framework/Versions/6/qwt $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib
 install_name_tool -change libplugin.dylib $CARTABUILDHOME/cpp/plugins/CasaImageLoader/libplugin.dylib $CARTABUILDHOME/cpp/plugins/ImageStatistics/libplugin.dylib
 install_name_tool -change libcore.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libcore.1.dylib $CARTABUILDHOME/cpp/plugins/ImageStatistics/libplugin.dylib
 

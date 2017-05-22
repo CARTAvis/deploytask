@@ -118,16 +118,10 @@ cp $qtpath/plugins/sqldrivers/libqsqlite.dylib $packagepath/Contents/MacOS/sqldr
 
 
 # 11. Rename Carta.app inot CARTA.app
-#mv /tmp/Carta.app /tmp/CARTA_$version.app
+mv /tmp/Carta.app /tmp/CARTA_$version.app
 
 
 # 12. Download and run the dmg creation script
-###
-### Until further notice, need to add the following to the script if using MacOS 10.12 Sierra
-###  "16")
-###      readonly OS_X_VERSION="10.12"
-###      ;;
-###
-#curl -O -L https://open-bitbucket.nrao.edu/projects/CASA/repos/casa-pkg/raw/packaging/scripts/make-carta-dmg.sh
-#chmod 755 make-carta-dmg.sh
-#./make-carta-dmg.sh /tmp/CARTA_$version.app
+curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/fromCASAPackagingRepo/packaging/scripts/make-carta-dmg.sh
+chmod 755 make-carta-dmg.sh
+./make-carta-dmg.sh /tmp/CARTA_$version.app

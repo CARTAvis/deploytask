@@ -54,7 +54,8 @@ name=`basename $app_path`
 
 if [ -e $root_path/Carta ]; then
    echo "cannot create dmg folder $root_path/Carta (it already exists)"
-   exit 1
+   echo "rename existing folder"
+   mv $root_path/Carta $root_path/CartaOld
 fi
 
 mkdir $root_path/Carta

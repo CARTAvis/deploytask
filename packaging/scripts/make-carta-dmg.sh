@@ -12,6 +12,14 @@ if [ ! -e $app_path ]; then
     exit 1
 fi
 
+
+###
+### Until further notice, need to add the following to the script if using MacOS 10.12 Sierra
+###  "16")
+###      readonly OS_X_VERSION="10.12"
+###      ;;
+###
+
 readonly OS_VERSION=$(uname -r | awk -F. '{print $1}')
 case $OS_VERSION in
 "10")
@@ -31,6 +39,9 @@ case $OS_VERSION in
 ;;
 "15")
     readonly OS_X_VERSION="10.11"
+;;
+"16")
+    readonly OS_X_VERSION="10.12"
 ;;
 *)
     echo "ERROR: Unknown OS X version."

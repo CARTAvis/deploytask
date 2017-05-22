@@ -44,8 +44,8 @@ rm -f $packagepath-$version/include/python2.7
 
 # 4. Copy over the html and qooxdoo
 cp -r $cartapath/carta/html5 $packagepath-$version/etc
-rm  $packagepath-$version/etc/html5/common/qooxdoo-3.5-sdk
-cp -r $thirdparty/qooxdoo-3.5-sdk $packagepath-$version/etc/html5/common/qooxdoo-3.5-sdk
+rm  $packagepath-$version/etc/html5/common/qooxdoo-3.5.1-sdk
+cp -r $thirdparty/qooxdoo-3.5.1-sdk $packagepath-$version/etc/html5/common/qooxdoo-3.5.1-sdk
 
 rm -f $packagepath-$version/etc/html5/html5.iml
 rm -f $packagepath-$version/etc/html5/._html5.iml

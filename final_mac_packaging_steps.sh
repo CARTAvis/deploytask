@@ -121,6 +121,7 @@ cp $qtpath/plugins/sqldrivers/libqsqlite.dylib $packagepath/Contents/MacOS/sqldr
 mv /tmp/Carta.app /tmp/CARTA_$version.app
 
 # 12. Fix the homebrew'qt issue which uses no-rpath
+echo "qt57homebrew:"$qt57brewrealpath
 if [ ${qt57brewrealpath+x} ]; then
 	echo "Fix the homebrew'qt issue which uses no-rpath"
   install_name_tool -change $qt57brewrealpath/lib/QtGui.framework/Versions/5/QtGui @rpath/QtGui.framework/Versions/5/QtGui $packagepath/Contents/MacOS/platforms/libqcocoa.dylib

@@ -34,7 +34,6 @@ version=8.8.9  ## A version number to be put on the dmg
 
 # cartawork=/Users/ajm/cartabuild/CARTAvis
 
-
 # 1. Fix paths (Based on Ville's NRAO instructions)
 mkdir $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks
 cd $CARTABUILDHOME
@@ -56,7 +55,6 @@ for f in `find . -name libplugin.dylib`; do install_name_tool -change libcore.1.
 for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $f; done
 for f in `find . -name "*.dylib"`; do install_name_tool -change libwcs.5.15.dylib  $cartawork/CARTAvis-externals/ThirdParty/wcslib/lib/libwcs.5.15.dylib $f; echo $f; done
 for f in `find . -name libplugin.dylib`; do install_name_tool -change libCartaLib.1.dylib  $CARTABUILDHOME/cpp/desktop/CARTA.app/Contents/Frameworks/libCartaLib.1.dylib $f; done
-
 
 # 2. Download and run the latest make-app-carta script
 # svn export https://github.com/CARTAvis/deploytask/trunk/make-app-carta
@@ -83,15 +81,12 @@ install_name_tool -change @rpath/QtPrintSupport.framework/Versions/5/QtPrintSupp
 # 4. Add  @rpath to desktop executable
 install_name_tool -add_rpath @loader_path/../Frameworks $packagepath/Contents/MacOS/CARTA
 
-
 # 5. Copy over libqcocoa.dylib (no need to change @rpath to @loader_path as we will add @rpath to the desktop exectuable)
 mkdir $packagepath/Contents/MacOS/platforms/
 cp $qtpath/plugins/platforms/libqcocoa.dylib $packagepath/Contents/MacOS/platforms/libqcocoa.dylib
 
-
 # 6. Copy the html to the application directory
 cp -r $cartawork/CARTAvis/carta/VFS/DesktopDevel $packagepath/Contents/Resources/html
-
 
 # 7. Setup geodetic and ephemerides data in the measures_directory
 curl -O -L http://www.asiaa.sinica.edu.tw/~ajm/carta/measures_data.tar.gz
@@ -99,14 +94,11 @@ tar -xvf measures_data.tar.gz
 mv measures_data $packagepath/Contents/Resources/
 rm measures_data.tar.gz
 
-
-
 # 8. Copy over the sample images
 curl -O -L http://www.asiaa.sinica.edu.tw/~ajm/carta/images.tar.gz
 tar -xvf images.tar.gz
 mv images $packagepath/Contents/Resources/
 rm images.tar.gz
-
 
 # 9. Copy the new app icon
 #cp $extra/applet.icns $packagepath/Contents/Resources/

@@ -70,6 +70,6 @@ hdiutil convert -format UDRW -o $root_path/c2 $root_path/c1.dmg && rm $root_path
 echo
 echo "Fix the Finder window of the Carta disk image (icon size and position)"
 echo "and then run this command:"
-hdiutil convert -format UDBZ -o Carta-${OS_X_VERSION}-${cartaver} $root_path/c2.dmg
+hdiutil convert -format UDBZ -o Carta $root_path/c2.dmg
 #osascript -e 'tell application "Finder" to activate'
 rm $root_path/c2.dmg

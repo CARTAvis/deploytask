@@ -129,11 +129,11 @@ if [ ${qt57brewrealpath+x} ]; then
 fi
 
 # 12. Rename Carta.app inot CARTA.app
-newappname=Carta.app
+newappname=Carta
 if [ "$cartaversion" != "" ];then
-	newappname=CARTA_$cartaversion.app
+	newappname=CARTA_$cartaversion
 fi
-mv /tmp/Carta.app /tmp/$newappname
+mv /tmp/Carta.app /tmp/$newappname.app
 
 # 13. Download and run the dmg creation script
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/fromCASAPackagingRepo/packaging/scripts/make-carta-dmg.sh

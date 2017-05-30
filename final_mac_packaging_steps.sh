@@ -30,7 +30,13 @@ else
 	export qtpath=$QT5PATH
 fi
 packagepath=/tmp/Carta.app
-version=8.8.9  ## A version number to be put on the dmg
+if [ ${cartaversion+x} ] ; then
+	echo "version already exist"
+else
+	echo "version not exist"
+	cartaversion=""
+fi
+  ## A version number to be put on the dmg
 
 # cartawork=/Users/ajm/cartabuild/CARTAvis
 
@@ -67,7 +73,7 @@ echo "make-app-carta start"
 if [ "$TRAVIS" != true ] ; then
 	./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/cpp/desktop/CARTA.app template=Carta.app
 else
-	echo "packaging in travis-ci"
+	echo "packaging in travis"
 	./make-app-carta -ni out=/tmp  ws=$CARTABUILDHOME/cpp/desktop/CARTA.app template=Carta.app
 fi
 echo "make-app-carta end"
@@ -123,9 +129,13 @@ if [ ${qt57brewrealpath+x} ]; then
 fi
 
 # 12. Rename Carta.app inot CARTA.app
-mv /tmp/Carta.app /tmp/CARTA_$version.app
+newappname=Carta.app
+if [ "$cartaversion" != "" ];then
+	newappname=CARTA_$cartaversion.app
+fi
+mv /tmp/Carta.app /tmp/$newappname
 
 # 13. Download and run the dmg creation script
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/fromCASAPackagingRepo/packaging/scripts/make-carta-dmg.sh
 chmod 755 make-carta-dmg.sh
-./make-carta-dmg.sh /tmp/CARTA_$version.app
+./make-carta-dmg.sh /tmp/$newappname.app

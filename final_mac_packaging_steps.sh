@@ -13,6 +13,7 @@ qtpath=/Users/ajm/Qt/5.7/clang_64
 cartapath=/Users/ajm/cartabuild/CARTAvis
 packagepath=/tmp/Carta.app
 version=8.8.9  ## A version number to be put on the dmg
+dmg_title="CARTA preview"
 
 # 1. Fix paths (Based on Ville's NRAO instructions)
 mkdir $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks
@@ -76,7 +77,6 @@ mv measures_data $packagepath/Contents/Resources/
 rm measures_data.tar.gz
 
 
-
 # 8. Copy over the sample images
 curl -O -L http://www.asiaa.sinica.edu.tw/~ajm/carta/images.tar.gz
 tar -xvf images.tar.gz
@@ -84,27 +84,17 @@ mv images $packagepath/Contents/Resources/
 rm images.tar.gz
 
 
-# 9. Copy the new app icon
-#cp $extra/applet.icns $packagepath/Contents/Resources/
-
-
-# 10. Fix for QtSql; copy its dylib file to the executable folder
+# 9. Fix for QtSql; copy its dylib file to the executable folder
 mkdir $packagepath/Contents/MacOS/sqldrivers
 cp $qtpath/plugins/sqldrivers/libqsqlite.dylib $packagepath/Contents/MacOS/sqldrivers/
 
 
-# 11. Rename Carta.app inot CARTA.app
-#mv /tmp/Carta.app /tmp/CARTA_$version.app
+# 10. Rename Carta.app into CARTA.app
+mv /tmp/Carta.app /tmp/CARTA.app
 
 
-# 12. Download and run the dmg creation script
-###
-### Until further notice, need to add the following to the script if using MacOS 10.12 Sierra 
-###  "16")
-###      readonly OS_X_VERSION="10.12"
-###      ;;
-###
-#curl -O -L https://open-bitbucket.nrao.edu/projects/CASA/repos/casa-pkg/raw/packaging/scripts/make-carta-dmg.sh
-#chmod 755 make-carta-dmg.sh
-#./make-carta-dmg.sh /tmp/CARTA_$version.app
+# 11. Download and run the dmg creation script
+curl -O https://raw.githubusercontent.com/CARTAvis/deploytask/master/make-carta-dmg.sh
+chmod 755 make-carta-dmg.sh
+./make-carta-dmg.sh /tmp/CARTA.app CARTA.app $dmg_title 
 

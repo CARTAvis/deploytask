@@ -1,3 +1,11 @@
+# caution:
+
+The version of the following libraries are hard-coded, we need to be very carefully when we build/upgrade them with CARTA.
+
+1. qooxdoo
+2. wcslib
+3. qwt
+
 # deploytask
 Temporary repo to put deploy scripts and stuff
 
@@ -21,14 +29,14 @@ Temporary repo to put deploy scripts and stuff
 8. Modify paths in the script for your system and run the script `chmod 755 final_centos7_packaging_steps.sh && ./final_centos7_packaging_steps.sh`
 
 # Miscellaneous files
-These scripts automatically download two archives as follow: 
+These scripts automatically download two archives as follow:
 1. `measures_data` containing the ephemerides and geodetic files:
 http://www.asiaa.sinica.edu.tw/~ajm/carta/measures_data.tar.gz
 
 2. `images` containing a few sample images:
 http://www.asiaa.sinica.edu.tw/~ajm/carta/images.tar.gz
 
-They also download and use updated versions of the Mac `Carta.app` and Linux `carta-distro` templates that have been extracted from the original NRAO `casa-pkg` template. 
+They also download and use updated versions of the Mac `Carta.app` and Linux `carta-distro` templates that have been extracted from the original NRAO `casa-pkg` template.
 The `Carta.app` and `carta-distro` are on this repository.
 
 The `casarc`, `carta.sh`, and `setupcartavis.sh` files are slightly different between Mac and Linux, and the latest versions have been put inside the appropriate templates for now.
@@ -40,7 +48,7 @@ The `casarc`, `carta.sh`, and `setupcartavis.sh` files are slightly different be
 
 
 # Note:
-After the 28th April 2017, the carta develop branch changed the name of the main executable. Old executable name: `desktop`. New executable name: `CARTA`. 
+After the 28th April 2017, the carta develop branch changed the name of the main executable. Old executable name: `desktop`. New executable name: `CARTA`.
 We need to update the current casa-pkg template for this new change but the separate `Carta.app` and `carta-distro` templates on this repository already contain these changes.
 If you really want to use the `casa-pkg` template, you can make the changes manually with a symbolic link (Here assuming casa-pkg is downloaded to /tmp/).
 
@@ -61,4 +69,3 @@ rm desktop
 Also, make sure the `carta.sh` you are using has updated the line `appname=desktop` to `appname=CARTA`
 
 Any branches before 28th April 2017 still use the old `desktop` name.
-

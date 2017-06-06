@@ -8,6 +8,7 @@
 ###     osx: make-app -v -ni ws=trunk arch=darwin   out=/tmp
 ###   linux: make-app        ws=trunk version=4.5.0 out=tmp type=test
 ###
+
 $longest_line = 0;
 
 use File::Basename;
@@ -45,7 +46,10 @@ $branch='release';
 @prefix = ( );
 $version = '';
 $reltype = '';
-$qtpath="/Users/rpmbuild/Qt5.7.0/5.7/clang_64/lib";
+#$qtpath="/Users/rpmbuild/Qt5.7.0/5.7/clang_64/lib";
+$qtpath=$ENV{'qtpath'}."/lib";
+
+print "make-app-carta use qt at:$qtpath\n";
 
 %exclude = ( );
 
@@ -217,11 +221,14 @@ $scan_count = 0;
 unless ( $quiet ) { print "\nbeginning multiple passes at resolving remaining dependencies...\n" }
 
 do {
+
     @scan_copies = ( );
 
     ++$scan_count;
-    scan_application( $app_dir, "rescanning application (pass $scan_count)...", 1 );
+    scan_application( $app_dir, "rescanning application (pass $scan_count)...", 1 ); ##真的有rescan
     unless ( $quiet ) { print "\nfound load-time dependencies in ", scalar(keys %libraries_dirs)," directories...\n"; }
+
+    $nnn = scalar(keys %libraries_dirs);
 
     ###
     ### print out dependencies for user to check...
@@ -243,7 +250,6 @@ do {
     unless( $quiet ) { print "copying dependencies to $library_destination ...\n" }
 
     foreach $libdir ( keys %libraries_dirs ) {
-        print "<<<>>>> $libdir\n";
         my $ref = $libraries_dirs{$libdir};
         ###
         ### throw away dependencies to obvious system areas...
@@ -254,6 +260,7 @@ do {
         ###
         foreach $dep ( keys %$ref ) {
             my $destfile = $dep;
+
             ###
             ### stored frameworks look like:
             ###
@@ -273,7 +280,17 @@ do {
                 if ( $ignore_missing_dep ) {
                     unless ( $quiet ) { print "warning: dependency $libdir/$destfile does NOT exist\n" }
                 } else {
-                    die "dependency $libdir/$destfile does NOT exist... $initial";
+
+                    # way1
+                    # 3. There is an exception case, Qt5.7 will produce a libwcs.dylib
+                    # (before, always "libwcs.5.15.dylib) and its the result of "otool -L" will include libwcs.5.15.dylib, therefore some error happen, so I just workaround as below
+                    #   if ($combine == "libwcs.5.15.dylib"){
+                    #                         print "ignore libwcs.5.15.dylib/";
+                    # grimmer copy, dir:libwcs.5.15.dylib;dest:
+                    # dependency libwcs.5.15.dylib/ does NOT exist...  at ./make-app-carta line 297. die
+
+                    # way2: just comment
+                    # die "dependency $libdir/$destfile does NOT exist... $initial";
                 }
 
             } else {
@@ -282,6 +299,7 @@ do {
             }
         }
     }
+
 } until ( scalar(@scan_copies) == 0 );
 
 unless( $quiet ) { print "resolving links to outside of application directory...\n" }
@@ -693,7 +711,7 @@ sub collect_dependencies_work {
         $rpathflag=0;
         # Patch relative rpaths
         if ($osname eq "darwin"){
-            print "$i $_";
+            # print "$i $_";
             chomp($_);
             $id = "";
             if ($i == "0") {
@@ -756,7 +774,9 @@ sub collect_dependencies_work {
         ### initial 'libqsvgicon.dylib' dependency causes 'libqsvgicon.dylib' to
         ### show up as the directory... throw this away...
         ###
-        print "Orig: $orig Dependency: $_\n";
+        # print "Orig: $orig Dependency: $_\n";
+        my $orig_backup = $orig;
+        my $dependency_backup = $_;
         next if $osname eq "darwin" && m|$libname\s+|;
         next if $osname eq "linux" && m|not found$|;
         next if $osname eq "linux" && m|statically linked|;
@@ -783,11 +803,12 @@ sub collect_dependencies_work {
             ### ignore direct system dependencies...
             ###
             next if $osname eq "darwin" && $dir =~ m@^(?:/usr/lib|/System)@;
+
             ### nrao sysadmins like to install things in /opt/local
             ### and make them available in an ad hoc fashion...
             next if $osname eq "linux" && $dir =~ m@^/usr/bin|^/opt/local/bin|^/opt/local/lib@;
-            if ( m|\s+(?:\S+ => )?(\S+)| ||  m|(^.*\.framework/.*)| ) {
 
+            if ( m|\s+(?:\S+ => )?(\S+)| ||  m|(^.*\.framework/.*)| ) {
 
                 $tmpfile = $1;
                 $tmpfile=~ s/://g;
@@ -795,6 +816,26 @@ sub collect_dependencies_work {
                 if ($rpathflag) {
                     $file = $_;
                 }
+
+                my $abs_file = abs_path($file);
+                my $abs_orig = abs_path($orig);
+
+                if ($abs_file eq "") {
+                    print "invalid abs_file\n";
+                    print "Orig: $orig_backup Dependency: $dependency_backup\n";
+                    next;
+                }
+
+                if ($abs_orig eq "") {
+                    ### Use of uninitialized value $_[0] in substitution (s///) at /System/Library/Perl/5.18/File/Basename.pm line 341.
+                    ### fileparse(): need a valid pathname at ./make-app-carta line 832.
+                    print "invalid abs_orig\n";
+                    print "Orig: $orig_backup Dependency: $dependency_backup\n";
+                    next;
+                }
+                # $abs_file = basename(abs_path($file)); usually empty but ok
+                # $abs_orig = basename(abs_path($orig)); usually empty but ok, seems will not be "eq", most of two empty
+
                 if ( basename(abs_path($file)) eq basename(abs_path($orig)) ) {
                     my $file_name = basename(abs_path($orig));
                     ###
@@ -810,6 +851,7 @@ sub collect_dependencies_work {
                     if ( ! $quiet && $final_pass ) { print "\tskipping self-reference to $file_name\n" }
                     ### the $final_pass flag signals the final scan where dependencies are tallied, using
                     ### it in this conditional prevents notifying the user of self-references twice...
+
                     next;
                 }
 
@@ -828,6 +870,7 @@ sub collect_dependencies_work {
                     $main::libraries_dirs{$dir} = { };
                 }
                 my $ref = $main::libraries_dirs{$dir};
+
                 my $subpath = $file;
                 $subpath =~ s|^$dir/?||;
 
@@ -842,8 +885,10 @@ sub collect_dependencies_work {
                         my $str = sprintf( "%-$longest_line".'s', $file );
                         print "\r\t<R> $str";
                     }
+
                     collect_dependencies_work($been_there,$file,$recursive);
                 }
+            } else {
             }
         }
     }

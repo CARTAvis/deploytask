@@ -96,5 +96,5 @@ mv /tmp/Carta.app /tmp/CARTA.app
 # 11. Download and run the dmg creation script
 curl -O https://raw.githubusercontent.com/CARTAvis/deploytask/master/make-carta-dmg.sh
 chmod 755 make-carta-dmg.sh
-./make-carta-dmg.sh /tmp/CARTA.app CARTA.app $dmg_title 
+./make-carta-dmg.sh /tmp/CARTA.app CARTA.app "${dmg_title}" 
 

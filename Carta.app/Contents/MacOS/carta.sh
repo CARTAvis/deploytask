@@ -20,7 +20,7 @@ if [ "${dirname%$tmp}" != "/" ]; then
 dirname=$PWD/$dirname
 fi
 
-logfilename=$HOME/.cartavis/log/$(date +"%Y_%m_%d").log
+logfilename=$HOME/.cartavis/log/$(date +"%Y%m%d_%H%M%S_%Z").log
 imagefile=$HOME/CARTA/Images/aJ.fits
 
 

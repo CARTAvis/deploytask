@@ -13,7 +13,7 @@ qtpath=/Users/ajm/Qt/5.7/clang_64
 cartapath=/Users/ajm/cartabuild/CARTAvis
 packagepath=/tmp/Carta.app
 version=8.8.9  ## A version number to be put on the dmg
-dmg_title="CARTA preview"
+dmg_title="CARTA_preview" ## Bug... can't accept spaces in the name
 
 # 1. Fix paths (Based on Ville's NRAO instructions)
 mkdir $CARTABUILDHOME/build/cpp/desktop/CARTA.app/Contents/Frameworks

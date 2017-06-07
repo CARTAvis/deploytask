@@ -60,6 +60,7 @@ fi
 
 ulimit -n 2048
 export CASARCFILES=$dirname/bin/casarc
+export PYTHONHOME=$dirname
 
 cd $dirname/bin
 #./$appname --html $dirname/VFS/DesktopDevel/desktop/desktopIndex.html --scriptPort 9999  2>&1 &

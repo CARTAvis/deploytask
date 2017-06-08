@@ -4,14 +4,15 @@
 # Modified from Ville's NRAO script.
 # 
 
-if [ $# -ne 3 ]; then
-    echo "usage: make-dmg <path-to-app> <CARTA.app name> <dmg title name>"
+if [ $# -ne 4 ]; then
+    echo "usage: make-dmg <path-to-app> <app icon name> <version number> <dmg name>"
 	exit 1
 fi
 
 app_path=$1
-applicationName=$2
-dmg_title=$3
+application_name=$2
+version_number=$3
+dmg_title=$4
 
 if [ ! -e $app_path ]; then
     echo "file $app_path not found..."
@@ -83,7 +84,7 @@ echo '
            set icon size of theViewOptions to 128
            set background picture of theViewOptions to file ".background:background.png"
            make new alias file at container window to POSIX file "/Applications" with properties {name:"Applications"}
-           set position of item "'${applicationName}'" of container window to {370, 80}
+           set position of item "'${application_name}.app'" of container window to {370, 80}
            set position of item "Applications" of container window to {670, 80}
            update without registering applications
            delay 5
@@ -93,6 +94,17 @@ echo '
    tell application "Finder"
      eject disk  "'${dmg_title}'"
    end tell
+' | osascript
+
+echo "Modifying the Info.plist file to set the App name and version number"
+open /tmp/c2.dmg
+sleep 5
+sed -i '' -e 's|<string>1.0</string>|<string>'$version_number'</string>|g' /Volumes/"${dmg_title}"/"${application_name}.app"/Contents/Info.plist     ## replaces 5th occurrence of 1.0
+sed -i '' -e 's|<string>Carta</string>|<string>'$application_name'</string>|g' /Volumes/"${dmg_title}"/"${application_name}.app"/Contents/Info.plist ## replaces 2nd occurrence of Carta
+echo '
+  tell application "Finder"
+   eject disk  "'${dmg_title}'"
+  end tell
 ' | osascript
 
 sleep 5

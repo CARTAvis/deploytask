@@ -12,6 +12,7 @@ CARTABUILDHOME=~/cartabuild
 qtpath=/Users/ajm/Qt/5.7/clang_64
 cartapath=/Users/ajm/cartabuild/CARTAvis
 packagepath=/tmp/Carta.app
+app_name=CARTA
 version=8.8.9  ## A version number to be put on the dmg
 dmg_title="CARTA_preview" ## Bug... can't accept spaces in the name
 
@@ -123,13 +124,9 @@ ln -s 5 Current
 cd 5
 chmod 644 QtWebKitWidgets
 
+cd $cartapath
 
-# 11. Rename Carta.app into CARTA.app
-mv /tmp/Carta.app /tmp/CARTA.app
-
-
-# 12. Download and run the dmg creation script
+# 11. Download and run the dmg creation script
 curl -O https://raw.githubusercontent.com/CARTAvis/deploytask/master/make-carta-dmg.sh
 chmod 755 make-carta-dmg.sh
-./make-carta-dmg.sh /tmp/CARTA.app CARTA.app "${dmg_title}" 
-
+./make-carta-dmg.sh "${packagepath}" "${app_name}" "${version}" "${dmg_title}"

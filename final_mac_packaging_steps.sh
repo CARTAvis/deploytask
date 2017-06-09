@@ -89,11 +89,46 @@ mkdir $packagepath/Contents/MacOS/sqldrivers
 cp $qtpath/plugins/sqldrivers/libqsqlite.dylib $packagepath/Contents/MacOS/sqldrivers/
 
 
-# 10. Rename Carta.app into CARTA.app
+# 10. Modify the directory structure of QtWebKit.framework and QtWebKitWidgets.framework
+#     to be consistent with the other Qt*.framework directories
+#     (The difference is due to the fact we are using pre-built QtWebKit binaries)
+#     The changes are necessary so that the app can be signed and pass verification tests.
+#     Note: Still need to confirm this works.
+
+cd $packagepath/Contents/Frameworks/QtWebKit.framework/
+rm QtWebkit
+rm -rf Headers
+rm -rf Resources
+ln -s Versions/Current/QtWebKit QtWebKit
+ln -s Versions/Current/Headers Headers
+ln -s Versions/Current/Resources Resources
+cd Versions
+mv 5.602.2 5
+rm -rf Current
+ln -s 5 Current
+cd 5
+chmod 644 QtWebKit
+
+cd $packagepath/Contents/Frameworks/QtWebKitWidgets.framework
+rm QtWebkitWidgets
+rm -rf Headers
+rm -rf Resources
+ln -s Versions/Current/QtWebKitWidgets QtWebKitWidgets
+ln -s Versions/Current/Headers Headers
+ln -s Versions/Current/Resources Resources
+cd Versions
+mv 5.602.2 5
+rm -rf Current
+ln -s 5 Current
+cd 5
+chmod 644 QtWebKitWidgets
+
+
+# 11. Rename Carta.app into CARTA.app
 mv /tmp/Carta.app /tmp/CARTA.app
 
 
-# 11. Download and run the dmg creation script
+# 12. Download and run the dmg creation script
 curl -O https://raw.githubusercontent.com/CARTAvis/deploytask/master/make-carta-dmg.sh
 chmod 755 make-carta-dmg.sh
 ./make-carta-dmg.sh /tmp/CARTA.app CARTA.app "${dmg_title}" 

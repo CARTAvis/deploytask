@@ -915,7 +915,7 @@ sub scan_application {
                            if ( $dir =~ m|/\.svn| || $dir =~ m|/CMakeFiles| ) { return }
                            if ( -f $_ ) {
                                $absf = abs_path($_);
-                               print "Checking: $absf\n";
+                               # print "Checking: $absf\n";
                                my $file_type = resolve_file_type($_);
                                $file_type eq 'exe' && push( @binaries, "$File::Find::dir/$_" );
                                $file_type eq 'sh' && push( @scripts, "$File::Find::dir/$_" );

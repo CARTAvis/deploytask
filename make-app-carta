@@ -30,7 +30,7 @@ $workspace='';
 $arch=$osname;
 %types=( );
 $quiet='';
-$quiet='';
+$quiet='yes';
 $non_interactive='';
 $local_template_path='';
 $local_data_path='';
@@ -724,15 +724,15 @@ sub collect_dependencies_work {
                 $id =~ s/ \(com.*//g;
                 print "ID: $id\n";
                 $id=trim($id);
-                print "Trimmed ID $id\n";
+                unless ( $quiet ) { print "Trimmed ID $id\n"; }
                 # Strip @rpath from id
                 $id =~ s/\@rpath\///g;
-                print "Stripped id $id\n";
+                unless ( $quiet ) { print "Stripped ID $id\n"; }
                 #$prefix = $currfile =~ s/$id//gr;
                 $prefix = $qtpath;
                 # And because we have Versions, take those out also
                 $id =~ s/\/Versions.*//g;
-                print "Stripped id $id\n";
+                unless ( $quiet ) { print "Stripped id $id\n"; }
                 #$prefix = $currfile =~ s/$id.*//gr;
                 $prefix = $qtpath;
 
@@ -744,13 +744,13 @@ sub collect_dependencies_work {
                 #$orig =~ s/ \(com.*//g;
                 $_ = trim($_);
                 $_ =~ s/ \(com.*//g;
-                print "Orig: $orig\n";
-                print "Currfile: $currfile\n";
-                print "Prefix: $prefix\n";
+                unless ( $quiet ) { print "Orig: $orig\n"; }
+                unless ( $quiet ) { print "Currfile: $currfile\n"; }
+                unless ( $quiet ) { print "Prefix: $prefix\n"; }
                 $_ =~ s/\@rpath/$prefix/g;
                 $modifiedpath = trim($_);
                 #$modifiedpath =~ s/ \(com.*//g;
-                print "Modified path: $modifiedpath\n";
+                unless ( $quiet ) { print "Modified path: $modifiedpath\n"; }
                 #print "Update command:\n";
                 #print "install_name_tool -change \\$orig $modifiedpath $currfile\n";
                 $_=$modifiedpath;

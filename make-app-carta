@@ -722,7 +722,7 @@ sub collect_dependencies_work {
             if ($i == "1") {
                 $id = $_;
                 $id =~ s/ \(com.*//g;
-                print "ID: $id\n";
+                unless ( $quiet ) { print "ID: $id\n"; }
                 $id=trim($id);
                 unless ( $quiet ) { print "Trimmed ID $id\n"; }
                 # Strip @rpath from id
@@ -821,16 +821,16 @@ sub collect_dependencies_work {
                 my $abs_orig = abs_path($orig);
 
                 if ($abs_file eq "") {
-                    print "invalid abs_file\n";
-                    print "Orig: $orig_backup Dependency: $dependency_backup\n";
+                    unless ( $quiet ) { print "invalid abs_file\n"; }
+                    unless ( $quiet ) { print "Orig: $orig_backup Dependency: $dependency_backup\n"; }
                     next;
                 }
 
                 if ($abs_orig eq "") {
                     ### Use of uninitialized value $_[0] in substitution (s///) at /System/Library/Perl/5.18/File/Basename.pm line 341.
                     ### fileparse(): need a valid pathname at ./make-app-carta line 832.
-                    print "invalid abs_orig\n";
-                    print "Orig: $orig_backup Dependency: $dependency_backup\n";
+                    unless ( $quiet ) { print "invalid abs_orig\n"; }
+                    unless ( $quiet ) { print "Orig: $orig_backup Dependency: $dependency_backup\n"; }
                     next;
                 }
                 # $abs_file = basename(abs_path($file)); usually empty but ok

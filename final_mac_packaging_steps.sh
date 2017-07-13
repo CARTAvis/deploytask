@@ -64,12 +64,7 @@ chmod 755 make-app-carta
 rm -rf $packagepath
 svn export https://github.com/CARTAvis/deploytask/trunk/Carta.app
 echo "make-app-carta start"
-if [ "$TRAVIS" != true ] ; then
-	./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/cpp/desktop/CARTA.app template=Carta.app
-else
-	echo "packaging in travis-ci"
-	./make-app-carta -ni out=/tmp  ws=$CARTABUILDHOME/cpp/desktop/CARTA.app template=Carta.app
-fi
+./make-app-carta -ni -v out=/tmp  ws=$CARTABUILDHOME/cpp/desktop/CARTA.app template=Carta.app
 echo "make-app-carta end"
 
 # 3. Remove .prl files and fix some things

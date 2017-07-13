@@ -711,7 +711,7 @@ sub collect_dependencies_work {
         $rpathflag=0;
         # Patch relative rpaths
         if ($osname eq "darwin"){
-            # print "$i $_";
+            print "$i $_";
             chomp($_);
             $id = "";
             if ($i == "0") {
@@ -774,9 +774,7 @@ sub collect_dependencies_work {
         ### initial 'libqsvgicon.dylib' dependency causes 'libqsvgicon.dylib' to
         ### show up as the directory... throw this away...
         ###
-        # print "Orig: $orig Dependency: $_\n";
-        my $orig_backup = $orig;
-        my $dependency_backup = $_;
+        print "Orig: $orig Dependency: $_\n";
         next if $osname eq "darwin" && m|$libname\s+|;
         next if $osname eq "linux" && m|not found$|;
         next if $osname eq "linux" && m|statically linked|;
@@ -817,24 +815,23 @@ sub collect_dependencies_work {
                     $file = $_;
                 }
 
-                my $abs_file = abs_path($file);
-                my $abs_orig = abs_path($orig);
+                $xx = abs_path($file);
+                $yy = abs_path($orig);
 
-                if ($abs_file eq "") {
+                if ($xx eq "" || $yy eq "") {
                     print "invalid abs_file\n";
-                    print "Orig: $orig_backup Dependency: $dependency_backup\n";
                     next;
                 }
 
-                if ($abs_orig eq "") {
+                if ($yy eq "") {
                     ### Use of uninitialized value $_[0] in substitution (s///) at /System/Library/Perl/5.18/File/Basename.pm line 341.
                     ### fileparse(): need a valid pathname at ./make-app-carta line 832.
                     print "invalid abs_orig\n";
-                    print "Orig: $orig_backup Dependency: $dependency_backup\n";
                     next;
                 }
-                # $abs_file = basename(abs_path($file)); usually empty but ok
-                # $abs_orig = basename(abs_path($orig)); usually empty but ok, seems will not be "eq", most of two empty
+
+                # $xxx = basename(abs_path($file)); usually empty but ok
+                # $yyy = basename(abs_path($orig)); usually empty but ok, seems will not be "eq", most of two empty
 
                 if ( basename(abs_path($file)) eq basename(abs_path($orig)) ) {
                     my $file_name = basename(abs_path($orig));

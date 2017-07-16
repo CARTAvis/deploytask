@@ -129,14 +129,49 @@ if [ ${qt57brewrealpath+x} ]; then
   install_name_tool -change $qt57brewrealpath/lib/QtWidgets.framework/Versions/5/QtWidgets @rpath/QtWidgets.framework/Versions/5/QtWidgets $packagepath/Contents/MacOS/platforms/libqcocoa.dylib
 fi
 
-# 12. Rename Carta.app inot CARTA.app
+# 12. Modify the directory structure of QtWebKit.framework and QtWebKitWidgets.framework to be consistent with the other Qt*.framework directories (to allow signing)
+pwd=`pwd`
+
+cd $packagepath/Contents/Frameworks/QtWebKit.framework
+rm QtWebkit
+rm -rf Headers
+rm -rf Resources
+ln -s Versions/Current/QtWebKit QtWebKit
+ln -s Versions/Current/Headers Headers
+ln -s Versions/Current/Resources Resources
+cd Versions
+mv 5.602.2 5
+rm -rf Current
+ln -s 5 Current
+cd 5
+chmod 644 QtWebKit
+
+cd $packagepath/Contents/Frameworks/QtWebKitWidgets.framework
+rm QtWebkitWidgets
+rm -rf Headers
+rm -rf Resources
+ln -s Versions/Current/QtWebKitWidgets QtWebKitWidgets
+ln -s Versions/Current/Headers Headers
+ln -s Versions/Current/Resources Resources
+cd Versions
+mv 5.602.2 5
+rm -rf Current
+ln -s 5 Current
+cd 5
+chmod 644 QtWebKitWidgets
+
+cd $pwd
+
+
+# 13. Rename Carta.app inot CARTA.app
 newappname=Carta
 if [ "$cartaversion" != "" ];then
 	newappname=CARTA_$cartaversion
 fi
 mv /tmp/Carta.app /tmp/$newappname.app
 
-# 13. Download and run the dmg creation script
+
+# 14. Download and run the dmg creation script
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/fromCASAPackagingRepo/packaging/scripts/make-carta-dmg.sh
 chmod 755 make-carta-dmg.sh
 ./make-carta-dmg.sh /tmp/$newappname.app

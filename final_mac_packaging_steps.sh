@@ -127,6 +127,8 @@ if [ ${qt57brewrealpath+x} ]; then
   install_name_tool -change $qt57brewrealpath/lib/QtCore.framework/Versions/5/QtCore @rpath/QtCore.framework/Versions/5/QtCore $packagepath/Contents/MacOS/platforms/libqcocoa.dylib
   install_name_tool -change $qt57brewrealpath/lib/QtPrintSupport.framework/Versions/5/QtPrintSupport @rpath/QtPrintSupport.framework/Versions/5/QtPrintSupport $packagepath/Contents/MacOS/platforms/libqcocoa.dylib
   install_name_tool -change $qt57brewrealpath/lib/QtWidgets.framework/Versions/5/QtWidgets @rpath/QtWidgets.framework/Versions/5/QtWidgets $packagepath/Contents/MacOS/platforms/libqcocoa.dylib
+  install_name_tool -change $qt57brewrealpath/lib/QtSql.framework/Versions/5/QtSql @rpath/QtSql.framework/Versions/5/QtSql $packagepath/Contents/MacOS/sqldrivers/libqsqlite.dylib
+  install_name_tool -change $qt57brewrealpath/lib/QtCore.framework/Versions/5/QtCore @rpath/QtCore.framework/Versions/5/QtCore $packagepath/Contents/MacOS/sqldrivers/libqsqlite.dylib
 fi
 
 # 12. Modify the directory structure of QtWebKit.framework and QtWebKitWidgets.framework to be consistent with the other Qt*.framework directories (to allow signing)

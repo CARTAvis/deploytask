@@ -119,6 +119,11 @@ rm images.tar.gz
 mkdir $packagepath/Contents/MacOS/sqldrivers
 cp $qtpath/plugins/sqldrivers/libqsqlite.dylib $packagepath/Contents/MacOS/sqldrivers/
 
+# 10b. Fix for QtWebEngine; it needs libqjpeg.dylib
+mkdir $packagepath/Contents/MacOS/imageformats
+cp $qtpath/plugins/imageformats/libqjpeg.dylib $packagepath/Contents/MacOS/imageformats/
+
+
 # 11. Fix the homebrew'qt issue which uses no-rpath
 echo "qt57homebrew:"$qt57brewrealpath
 if [ ${qt57brewrealpath+x} ]; then
@@ -129,6 +134,8 @@ if [ ${qt57brewrealpath+x} ]; then
   install_name_tool -change $qt57brewrealpath/lib/QtWidgets.framework/Versions/5/QtWidgets @rpath/QtWidgets.framework/Versions/5/QtWidgets $packagepath/Contents/MacOS/platforms/libqcocoa.dylib
   install_name_tool -change $qt57brewrealpath/lib/QtSql.framework/Versions/5/QtSql @rpath/QtSql.framework/Versions/5/QtSql $packagepath/Contents/MacOS/sqldrivers/libqsqlite.dylib
   install_name_tool -change $qt57brewrealpath/lib/QtCore.framework/Versions/5/QtCore @rpath/QtCore.framework/Versions/5/QtCore $packagepath/Contents/MacOS/sqldrivers/libqsqlite.dylib
+  install_name_tool -change $qt57brewrealpath/lib/QtGui.framework/Versions/5/QtGui @rpath/QtGui.framework/Versions/5/QtGui $packagepath/Contents/MacOS/imageformats/libqjpeg.dylib
+  install_name_tool -change $qt57brewrealpath/lib/QtCore.framework/Versions/5/QtCore @rpath/QtCore.framework/Versions/5/QtCore $packagepath/Contents/MacOS/imageformats/libqjpeg.dylib
 fi
 
 # 12. Modify the directory structure of QtWebKit.framework and QtWebKitWidgets.framework to be consistent with the other Qt*.framework directories (to allow signing)

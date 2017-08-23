@@ -86,3 +86,14 @@ if [ ! -d $HOME/CARTA/snapshots/preferences ]; then
 	echo "creating $HOME/CARTA/snapshots directory..."
 	mkdir $HOME/CARTA/snapshots/preferences
 fi
+
+# Copy the carta icon to ~/.icon
+if [ ! -e $HOME/.icons/carta.png ]; then
+	        if [ ! -d $HOME/.icons ]; then
+			echo "Creating .icons directory"
+			mkdir $HOME/.icons
+		fi
+		echo "Copying CARTA logo"
+		cp $dirname/../etc/carta.png $HOME/.icons/
+fi
+

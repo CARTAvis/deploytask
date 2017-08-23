@@ -54,6 +54,7 @@ if [ ! -e $HOME/data/ephemerides -o\
       ! -d $HOME/.cartavis/log  -o\
       ! -f $HOME/.cartavis/config.json -o\
       $dirname/config/config.json -nt $HOME/.cartavis/config.json -o\
+      ! -f $HOME/.icons/carta.png -o \
       ! -d $HOME/CARTA/snapshots/data ]; then
 	$dirname/bin/setupcartavis.sh 2>&1
 fi

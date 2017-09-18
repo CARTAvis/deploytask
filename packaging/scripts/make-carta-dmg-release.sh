@@ -93,8 +93,11 @@ echo '
            set icon size of theViewOptions to 128
            set background picture of theViewOptions to file ".background:background.png"
            make new alias file at container window to POSIX file "/Applications" with properties {name:"Applications"}
-           set position of item "'${application_name}.app'" of container window to {370, 80}
+           delay 5
+           set position of item "'${application_name}.app'" of container window to {370, 70}
+           delay 5
            set position of item "Applications" of container window to {670, 80}
+           delay 5
            update without registering applications
            delay 5
            close

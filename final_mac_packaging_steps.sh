@@ -183,5 +183,5 @@ mv /tmp/Carta.app /tmp/$newappname.app
 # 14. Download and run the dmg creation script
 #curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/fromCASAPackagingRepo/packaging/scripts/make-carta-dmg.sh
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/fromCASAPackagingRepo/packaging/scripts/make-carta-dmg-release.sh
-chmod 755 make-carta-dmg.sh
+chmod 755 make-carta-dmg-release.sh
 ./make-carta-dmg.sh /tmp/$newappname.app

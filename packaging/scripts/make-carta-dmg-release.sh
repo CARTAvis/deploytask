@@ -65,7 +65,7 @@ mv $app_path $root_path/Carta
 
 cartaver=0.9.0 #$(cat $root_path/Carta/$name/Contents/Resources/VERSION | cut -d ' ' -f 1  | cut -d '.' -f 3 )
 #hdiutil create -srcfolder $root_path/Carta -volname "Carta_${OS_X_VERSION}_${cartaver}" $root_path/c1
-hdiutil create -srcfolder $root_path/Carta -volname "CARTA\ 0.9\ Preview" $root_path/c1
+hdiutil create -srcfolder $root_path/Carta -volname "CARTA 0.9 Preview" $root_path/c1
 hdiutil convert -format UDRW -o $root_path/c2 $root_path/c1.dmg && rm $root_path/c1.dmg
 
 echo "Setting up the installer"
@@ -74,7 +74,7 @@ sleep 5
 
 echo "Copying the hidden background image folder in place"
 
-application_name=CARTA_0.9_preview
+application_name=Carta
 
 #mkdir -p /Volumes/Carta_${OS_X_VERSION}_${cartaver}/.background
 mkdir -p /Volumes/CARTA\ 0.9\ Preview/.background
@@ -86,7 +86,7 @@ echo "Setting up the size, icon positions, and background image of the dmg windo
 echo '
    tell application "Finder"
 #     tell disk "'Carta_${OS_X_VERSION}_${cartaver}'"
-      tell disk "'CARTA\ 0.9\ Preview'"
+      tell disk "'CARTA 0.9 Preview'"
            open
            set current view of container window to icon view
            set toolbar visible of container window to false
@@ -109,7 +109,7 @@ echo '
    end tell
    tell application "Finder"
 #     eject disk  "'Carta_${OS_X_VERSION}_${cartaver}'"
-      eject disk "'CARTA\ 0.9\ Preview'"
+      eject disk "'CARTA 0.9 Preview'"
    end tell
 ' | osascript
 
@@ -119,13 +119,13 @@ sleep 5
 #sed -i '' -e 's|<string>1.0</string>|<string>'$version_number'</string>|g' /Volumes/"Carta_${OS_X_VERSION}_${cartaver}"/"${application_name}.app"/Contents/Info.plist     ## replaces 5th occurrence of 1.0
 #sed -i '' -e 's|<string>Carta</string>|<string>'$application_name'</string>|g' /Volumes/"Carta_${OS_X_VERSION}_${cartaver}"/"${application_name}.app"/Contents/Info.plist ## replaces 2nd occurrence of Carta
 sed -i '' -e 's|<string>1.0</string>|<string>0.9</string>|g' /Volumes/CARTA\ 0.9\ Preview/"${application_name}.app"/Contents/Info.plist     ## replaces 5th occurrence of 1.0
-sed -i '' -e 's|<string>Carta</string>|<string>CARTA</string>|g' /Volumes/CARTA\ 0.9\ Preview/"${application_name}.app"/Contents/Info.plist ## replaces 2nd occurrence of Carta
+sed -i '' -e 's|<string>Carta</string>|<string>CARTA 0.9 preview</string>|g' /Volumes/CARTA\ 0.9\ Preview/"${application_name}.app"/Contents/Info.plist ## replaces 2nd occurrence of Carta
 
 
 echo '
   tell application "Finder"
 #   eject disk  "'Carta_${OS_X_VERSION}_${cartaver}'"
-   eject disk  "'CARTA\ 0.9\ Preview'"
+   eject disk  "'CARTA 0.9 Preview'"
   end tell
 ' | osascript
 

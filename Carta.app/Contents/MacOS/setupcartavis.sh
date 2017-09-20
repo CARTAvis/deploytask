@@ -101,5 +101,5 @@ fi
 # check that sample files exists
 if [ ! -f $HOME/CARTA/Images/HD163296_CO_2_1_mom1_zoom.image.fits ]; then
 	echo "copying sample images to $HOME/CARTA/Images directory ..."
-	cp $dirname/../Resources/images/*.fits $HOME/CARTA/Images
+	cp -r $dirname/../Resources/images/* $HOME/CARTA/Images
 fi

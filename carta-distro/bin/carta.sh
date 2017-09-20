@@ -46,11 +46,11 @@ dirname=$dirname/../
 echo "dirname $dirname"
 
 logfilename=$HOME/.cartavis/log/$(date +"%Y%m%d_%H%M%S_%Z").log
-imagefile=$HOME/CARTA/Images/aJ.fits
+#imagefile=$HOME/CARTA/Images/aJ.fits
 
 if [ ! -e $HOME/data/ephemerides -o\
       ! -e $HOME/data/geodetic -o\
-      ! -d $HOME/CARTA/Images/CubesTest -o\
+      ! -d $HOME/CARTA/cache -o\
       ! -d $HOME/.cartavis/log  -o\
       ! -f $HOME/.cartavis/config.json -o\
       $dirname/config/config.json -nt $HOME/.cartavis/config.json -o\
@@ -67,5 +67,5 @@ cd $dirname/bin
 #./$appname --html $dirname/VFS/DesktopDevel/desktop/desktopIndex.html --scriptPort 9999  2>&1 &
 #echo "./$appname --html $dirname/VFS/DesktopDevel/desktop/desktopIndex.html --scriptPort 9999 $imagefile >> $logfilename 2>&1 &"
 #./$appname --html $dirname/VFS/DesktopDevel/desktop/desktopIndex.html --scriptPort 9999 $imagefile >> $logfilename 2>&1 &
-./$appname --html $dirname/etc/html5/desktop/desktopIndex.html --scriptPort 9999 $imagefile
+./$appname --html $dirname/etc/html5/desktop/desktopIndex.html --scriptPort 9999
 

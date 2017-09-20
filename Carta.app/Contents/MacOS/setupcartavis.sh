@@ -38,11 +38,11 @@ fi
 # want to make a local copy of config.json in the user's home 
 # directory so they can easily modify it. 
 # $HOME/.cartavis/config.json takes precedence over $dirname/../Resources/config/config.json
-# However, we want to delete any old versions of config.json from earlier versions of 
+# However, we want to delete any old versions of config.json left from earlier versions of 
 # CARTA as it may cause conflicts with the new version
 
 ### Note: If the user wishes to customise their config.json, please comment out the following 11 lines 
-### so that any changes will not be overwritten:
+### so that any changes you may make to config.json will not be overwritten:
 
 ### delete $HOME/.cartavis/config.json
 if [ -e $HOME/.cartavis/config.json ]; then

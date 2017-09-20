@@ -35,18 +35,25 @@ if [ ! -d $HOME/.cartavis/log ]; then
 	mkdir $HOME/.cartavis/log
 fi
 
-# check that config.json exists
-#if [ ! -f $HOME/.cartavis/config.json ]; then
-#	echo "copying config.json file to  $HOME/.cartavis directory..."
-#	cp $dirname/../Resources/config/config.json $HOME/.cartavis
-#fi
+# want to make a local copy of config.json in the user's home 
+# directory so they can easily modify it. 
+# $HOME/.cartavis/config.json takes precedence over $dirname/../Resources/config/config.json
+# However, we want to delete any old versions of config.json from earlier versions of 
+# CARTA as it may cause conflicts with the new version
 
-# Want users to use the internal config.json in Resournces/config/
-# Also if a config.json from a previous version of CARTA is present, it might lead to problems. 
-# Therefore, delete ~/.cartavis/config.json if it is present
+### Note: If the user wishes to customise their config.json, please comment out the following 11 lines 
+### so that any changes will not be overwritten:
+
+### delete $HOME/.cartavis/config.json
 if [ -e $HOME/.cartavis/config.json ]; then
         echo "Removing old config.json"
         rm $HOME/.cartavis/config.json
+fi
+
+### copy the new config.json
+if [ ! -f $HOME/.cartavis/config.json ]; then
+        echo "copying config.json file to  $HOME/.cartavis directory..."
+        cp $dirname/../Resources/config/config.json $HOME/.cartavis
 fi
 
 # check that $HOME/CARTA directory exists
@@ -54,6 +61,11 @@ if [ ! -d $HOME/CARTA ]; then
 	echo "creating $HOME/CARTA directory..."
 	mkdir $HOME/CARTA
 fi
+
+# create cache folder in $HOME/CARTA for new location of the cache file
+if [ ! -d $HOME/CARTA/cache ]; then
+        echo "creating $HOME/CARTA/cache directory..."
+        mkdir $HOME/CARTA/cache
 
 # check that $HOME/CARTA/Images directory exists
 if [ ! -d $HOME/CARTA/Images ]; then
@@ -86,7 +98,7 @@ if [ ! -d $HOME/CARTA/snapshots/preferences ]; then
 fi
 
 # check that sample files exists
-if [ ! -f $HOME/CARTA/Images/555wmos.fits ]; then
-	echo "copying sample images to $HOME/CARTA/Images directory ..."
-	cp $dirname/../Resources/images/*.fits $HOME/CARTA/Images
-fi
+#if [ ! -f $HOME/CARTA/Images/555wmos.fits ]; then
+#	echo "copying sample images to $HOME/CARTA/Images directory ..."
+#	cp $dirname/../Resources/images/*.fits $HOME/CARTA/Images
+#fi

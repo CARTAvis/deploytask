@@ -66,6 +66,7 @@ fi
 if [ ! -d $HOME/CARTA/cache ]; then
         echo "creating $HOME/CARTA/cache directory..."
         mkdir $HOME/CARTA/cache
+fi
 
 # check that $HOME/CARTA/Images directory exists
 if [ ! -d $HOME/CARTA/Images ]; then

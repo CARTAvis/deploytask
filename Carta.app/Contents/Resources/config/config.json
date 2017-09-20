@@ -1,19 +1,16 @@
 {
-"pluginDirs":[
-"$(APPDIR)/../Plugins/"
-],
-
-"disabledPlugins" : [
-"PCacheLevelDB"
-],
-"plugins": {
-    "PCacheSqlite3" : {
-        "dbPath": "/tmp/carta_sql_cache"
+    "_comment" : "List of plugin directories",
+    "pluginDirs": [
+        "$(APPDIR)/../plugins",
+        "$(APPDIR)/../../../../plugins"
+    ],
+    "disabledPlugins" : [""],
+    "plugins": {
+        "PCacheSqlite3" : {
+            "dbPath": "$(HOME)/CARTA/cache/pcache.sqlite"
+        }
     },
-    "PCacheLevelDB" : {
-        "dbPath": "/tmp/carta_leveldb_cache"
-    }
+    "qtDecorations" : "true",
+    "percentileApproximation" : "true",
+    "percentApproxDividedNum" : 1000000
 }
-
-}
-

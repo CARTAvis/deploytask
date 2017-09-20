@@ -35,20 +35,25 @@ if [ ! -d $HOME/.cartavis/log ]; then
 	mkdir $HOME/.cartavis/log
 fi
 
-# check that config.json exists
-#if [[ ! -f $HOME/.cartavis/config.json || $dirname/config/config.json -nt $HOME/.cartavis/config.json ]]; then
-#	echo "copying config.json file to  $HOME/.cartavis directory..."
-#	cp $dirname/config/config.json $HOME/.cartavis
-#fi
+# want to make a local copy of config.json in the user's home 
+# directory so they can easily modify it. 
+# $HOME/.cartavis/config.json takes precedence over $dirname/../Resources/config/config.json
+# However, we want to delete any old versions of config.json from earlier versions of 
+# CARTA as it may cause conflicts with the new version
+
+### Note: If the user wishes to customise their config.json, please comment out the following 11 lines 
+### so that any changes will not be overwritten:
+
+### delete $HOME/.cartavis/config.json
 if [ -e $HOME/.cartavis/config.json ]; then
         echo "Removing old config.json"
         rm $HOME/.cartavis/config.json
 fi
 
-# check that $HOME/CARTA directory exists
-if [ ! -d $HOME/CARTA ]; then
-	echo "creating $HOME/CARTA directory..."
-	mkdir $HOME/CARTA
+### copy the new config.json
+if [ ! -f $HOME/.cartavis/config.json ]; then
+        echo "copying config.json file to  $HOME/.cartavis directory..."
+        cp $dirname/../etc/config/config.json $HOME/.cartavis
 fi
 
 # check that $HOME/CARTA/Images directory exists
@@ -58,10 +63,10 @@ if [ ! -d $HOME/CARTA/Images ]; then
 fi
 
 # check that sample files exists
-if [ ! -d $HOME/CARTA/Images/CubesTest ]; then
-    echo "copying sample images to $HOME/CARTA/Images directory ..."
-    cp -R $dirname/../etc/images/* $HOME/CARTA/Images
-fi
+#if [ ! -d $HOME/CARTA/Images/CubesTest ]; then
+#    echo "copying sample images to $HOME/CARTA/Images directory ..."
+#    cp -R $dirname/../etc/images/* $HOME/CARTA/Images
+#fi
 
 # check that $HOME/CARTA/snapshots directory exists
 if [ ! -d $HOME/CARTA/snapshots ]; then

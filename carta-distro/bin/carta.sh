@@ -68,5 +68,5 @@ cd $dirname/bin
 #./$appname --html $dirname/VFS/DesktopDevel/desktop/desktopIndex.html --scriptPort 9999  2>&1 &
 #echo "./$appname --html $dirname/VFS/DesktopDevel/desktop/desktopIndex.html --scriptPort 9999 $imagefile >> $logfilename 2>&1 &"
 #./$appname --html $dirname/VFS/DesktopDevel/desktop/desktopIndex.html --scriptPort 9999 $imagefile >> $logfilename 2>&1 &
-./$appname --html $dirname/etc/html5/desktop/desktopIndex.html --scriptPort 9999
+./$appname --html $dirname/etc/html5/desktop/desktopIndex.html --scriptPort 9999 >> $logfilename 2>&1 &
 

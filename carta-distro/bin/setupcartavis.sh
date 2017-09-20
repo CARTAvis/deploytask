@@ -56,17 +56,23 @@ if [ ! -f $HOME/.cartavis/config.json ]; then
         cp $dirname/../etc/config/config.json $HOME/.cartavis
 fi
 
+# create the cache directory if it does not already exist
+if [ ! -d $HOME/CARTA/cache ]; then
+        echo "creating $HOME/CARTA/cache directory..."
+        mkdir -p $HOME/CARTA/cache
+fi
+
 # check that $HOME/CARTA/Images directory exists
 if [ ! -d $HOME/CARTA/Images ]; then
 	echo "creating $HOME/CARTA/Images directory..."
-	mkdir $HOME/CARTA/Images
+	mkdir -p $HOME/CARTA/Images
 fi
 
 # check that sample files exists
-#if [ ! -d $HOME/CARTA/Images/CubesTest ]; then
-#    echo "copying sample images to $HOME/CARTA/Images directory ..."
-#    cp -R $dirname/../etc/images/* $HOME/CARTA/Images
-#fi
+if [ ! -d $HOME/CARTA/Images/CubesTest ]; then
+    echo "copying sample images to $HOME/CARTA/Images directory ..."
+    cp -R $dirname/../etc/images/* $HOME/CARTA/Images
+fi
 
 # check that $HOME/CARTA/snapshots directory exists
 if [ ! -d $HOME/CARTA/snapshots ]; then

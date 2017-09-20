@@ -50,6 +50,7 @@ logfilename=$HOME/.cartavis/log/$(date +"%Y%m%d_%H%M%S_%Z").log
 
 if [ ! -e $HOME/data/ephemerides -o\
       ! -e $HOME/data/geodetic -o\
+      ! -d $HOME/CARTA/Images -o\
       ! -d $HOME/CARTA/cache -o\
       ! -d $HOME/.cartavis/log  -o\
       ! -f $HOME/.cartavis/config.json -o\

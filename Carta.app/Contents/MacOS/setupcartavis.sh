@@ -98,7 +98,7 @@ if [ ! -d $HOME/CARTA/snapshots/preferences ]; then
 fi
 
 # check that sample files exists
-#if [ ! -f $HOME/CARTA/Images/555wmos.fits ]; then
-#	echo "copying sample images to $HOME/CARTA/Images directory ..."
-#	cp $dirname/../Resources/images/*.fits $HOME/CARTA/Images
-#fi
+if [ ! -f $HOME/CARTA/Images/HD163296_CO_2_1_mom1_zoom.image.fits ]; then
+	echo "copying sample images to $HOME/CARTA/Images directory ..."
+	cp $dirname/../Resources/images/*.fits $HOME/CARTA/Images
+fi

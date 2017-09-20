@@ -25,6 +25,7 @@ logfilename=$HOME/.cartavis/log/$(date +"%Y%m%d_%H%M%S_%Z").log
 
 if [ ! -d $HOME/.cartavis/log  -o\
      ! -f $HOME/.cartavis/config.json -o\
+     ! -d $HOME/CARTA/Images  -o\
      ! -d $HOME/CARTA/cache  -o\
      ! -d $HOME/CARTA/snapshots/data ]; then
     $dirname/setupcartavis.sh 2>&1  > /dev/null

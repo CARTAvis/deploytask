@@ -35,25 +35,27 @@ if [ ! -d $HOME/.cartavis/log ]; then
 	mkdir $HOME/.cartavis/log
 fi
 
-# want to make a local copy of config.json in the user's home 
-# directory so they can easily modify it. 
-# $HOME/.cartavis/config.json takes precedence over $dirname/../etc/config/config.json
-# However, we want to delete any old versions of config.json left from earlier versions 
-# of CARTA as it may cause conflicts with the new version.
+#  Want to make a local copy of config.json in the user's home directory so the user can customise it
+#  $HOME/.cartavis/config.json takes precedence over $dirname/../Resources/config/config.json
+#  However, we want to delete any old versions of config.json from earlier versions of CARTA as 
+#  and older config.json may cause conflicts with the new version of CARTA
 
-### Note: If the user wishes to customise their config.json, please comment out the following 11 lines 
-### so that any changes you make to config.json will not be overwritten:
-
-### delete $HOME/.cartavis/config.json
-if [ -e $HOME/.cartavis/config.json ]; then
-        echo "Removing old config.json"
-        rm $HOME/.cartavis/config.json
+# Copy config.json if it does not already exist
+if [ ! -f $HOME/.cartavis/config.json ]; then
+        echo "Copying config.json file to $HOME/.cartavis directory..."
+        cp $dirname/../etc/config/config.json $HOME/.cartavis
 fi
 
-### copy the new config.json
-if [ ! -f $HOME/.cartavis/config.json ]; then
-        echo "copying config.json file to  $HOME/.cartavis directory..."
-        cp $dirname/../etc/config/config.json $HOME/.cartavis
+# If config.json exists, check if it is a new version
+# If it is new, do nothing. If it is old, make a backup of the old version and copy the new version
+if [ -f $HOME/.cartavis/config.json ]; then
+       if [[ $(grep "percentApproxDividedNum" $HOME/.cartavis/config.json) ]]; then
+           echo "new config.json detected" 
+       else
+           echo "old config.json detected; keeping your old one and copying new one in place"
+           mv $HOME/.cartavis/config.json $HOME/.cartavis/config.json_old
+           cp $dirname/../etc/config/config.json $HOME/.cartavis/
+       fi
 fi
 
 # create the cache directory if it does not already exist

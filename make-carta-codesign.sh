@@ -9,9 +9,8 @@ echo "App signing script is running"
 ### Get the certifcicates
 echo "Step 1: Getting the certificates from GitHub"
 
-curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/master/signing/developer_ID_application.p12.enc
-curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/master/signing/developer_ID_installer.p12.enc
-curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/master/signing/developer_profile.developerprofile.enc
+curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/master/signing/development-key.p12.enc
+curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/master/signing/developerID_application.cer.enc
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/master/signing/AppleWWDRCA.cer
 
 ls -sort ## to check the files
@@ -19,26 +18,33 @@ ls -sort ## to check the files
 ### Decrypt the certificates
 echo "Step 2: Decypting the certificates"
 
-openssl aes-256-cbc -k "$encyption_password" -in developer_ID_application.p12.enc -d -a -out developer_ID_application.p12
-openssl aes-256-cbc -k "$encyption_password" -in developer_ID_installer.p12.enc -d -a -out developer_ID_installer.p12
-openssl aes-256-cbc -k "$encyption_password" -in developer_profile.developerprofile.enc -d -a -out developer_profile.developerprofile
+openssl aes-256-cbc -k "$encryption_password" -in developerID_application.cer.enc -d -a -out developerID_application.cer
+openssl aes-256-cbc -k "$encryption_password" -in development-key.p12.enc -d -a -out development-key.p12
 
-ls -sort 
+ls -sort
 
 ### Create custom keychain
 echo "Step 3: Creating custom keychain"
 
-security create-keychain -p $keychain_password carta.build.keychain
-security default-keychain -s carta.build.keychain
-security unlock-keychain -p $keychain_password carta.build.keychain
+security list-keychains
+
+security create-keychain -p $keychain_password acdc.carta.keychain
+security default-keychain -s acdc.carta.keychain
+security unlock-keychain -p $keychain_password acdc.carta.keychain
+security set-keychain-settings -lut 3600 acdc.carta.keychain
+
+security list-keychains
 
 ### Import Certificates
 echo "Step 4: Importing keys"
 
-security import AppleWWDRCA.cer -k carta.build.keychain -A
-security import developer_profile.developerprofile -k carta.build.keychain -A
-security import developer_ID_application.p12 -k carta.build.keychain -p $keychain_password -A
-security import developer_ID_installer.p12 -k  carta.build.keychain -p $keychain_password -A
+security import AppleWWDRCA.cer -k acdc.carta.keychain -A
+security import developerID_application.cer -k acdc.carta.keychain -A
+security import development-key.p12 -k acdc.carta.keychain -P $security_password -A
+
+security set-key-partition-list -S apple-tool:,apple: -s -k $keychain_password acdc.carta.keychain
+
+security find-identity -v -p codesigning
 
 ### Do the codesign
 echo "Step 5: Codesigning"
@@ -59,7 +65,7 @@ echo "Step 5: Codesigning"
 ### Sign the dmg
 codesign -v Carta.dmg
 
-codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" Carta.dmg
+codesign -s "2EE072130251C53A08E5ED956E4AA227CDF54D1A" Carta.dmg
 
 codesign -v Carta.dmg # for checking it worked
 

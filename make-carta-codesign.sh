@@ -6,6 +6,11 @@
 
 echo "App signing script is running"
 
+newappname=Carta
+if [ "$cartaversion" != "" ];then
+	newappname=CARTA_$cartaversion
+fi
+
 ### Get the certifcicates
 echo "Step 1: Getting the certificates from GitHub"
 

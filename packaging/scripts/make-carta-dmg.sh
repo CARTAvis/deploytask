@@ -74,8 +74,8 @@ hdiutil convert -format UDBZ -o Carta $root_path/c2.dmg
 #osascript -e 'tell application "Finder" to activate'
 rm $root_path/c2.dmg
 
-echo "attempting codesign"
-curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/Qt5.8.0/make-carta-codesign.sh
-chmod 755 make-carta-codesign.sh
-./make-carta-codesign.sh
+#echo "attempting codesign"
+#curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/Qt5.8.0/make-carta-codesign.sh
+#chmod 755 make-carta-codesign.sh
+#./make-carta-codesign.sh
 

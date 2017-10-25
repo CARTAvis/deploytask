@@ -172,7 +172,7 @@ chmod 644 QtWebKitWidgets
 cd $pwd
 
 
-# 13. Rename Carta.app inot CARTA.app
+# 13. Rename Carta.app into CARTA.app
 newappname=Carta
 if [ "$cartaversion" != "" ];then
 	newappname=CARTA_$cartaversion
@@ -180,7 +180,14 @@ fi
 mv /tmp/Carta.app /tmp/$newappname.app
 
 
-# 14. Download and run the dmg creation script
+# 14. Sign the app
+echo "attempting codesign"
+curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/Qt5.8.0/make-carta-codesign.sh
+chmod 755 make-carta-codesign.sh
+./make-carta-codesign.sh
+
+
+# 15. Download and run the dmg creation script
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/fromCASAPackagingRepo/packaging/scripts/make-carta-dmg.sh
 chmod 755 make-carta-dmg.sh
 ./make-carta-dmg.sh /tmp/$newappname.app

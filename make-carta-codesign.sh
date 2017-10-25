@@ -48,26 +48,35 @@ security find-identity -v -p codesigning
 
 ### Do the codesign
 echo "Step 5: Codesigning"
+codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/casarc
+codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/CARTA
+codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/setupcartavis.sh
+codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/carta.sh
+codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/sqldrivers/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/platforms/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/qwt.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtConcurrent.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtCore.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtGui.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtMultimedia.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtMultimediaWidgets.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtNetwork.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtOpenGL.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtPositioning.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtPrintSupport.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtSensors.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtSql.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtSvg.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtWebKit.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtWebKitWidgets.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtWidgets.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtXml.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/lib*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/.gitkeep
+codesign -s "$id_key" /tmp/$newappname.app
 
-### For signing the App (Will need to change path location)
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app/Contents/MacOS/casarc 
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app/Contents/MacOS/CARTA 
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app/Contents/MacOS/setupcartavis.sh 
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app/Contents/MacOS/carta.sh 
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app/Contents/MacOS/sqldrivers/*
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app/Contents/MacOS/platforms/*
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app/Contents/Frameworks/qwt.framework
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app/Contents/Frameworks/Qt*
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app/Contents/Frameworks/lib*
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app/Contents/Frameworks/.gitkeep 
-#codesign -s "INSTITUTE OF ASTRONOMY AND ASTROPHYSICS, ACADEMIA SINICA" CARTA.app
-
-### Sign the dmg
-codesign -v Carta.dmg
-
-codesign -s "2EE072130251C53A08E5ED956E4AA227CDF54D1A" Carta.dmg
-
-codesign -v Carta.dmg # for checking it worked
+echo "Checking if codesign worked:"
+codesign -v /tmp/$newappname.app # for checking it worked
 
 echo "This is the end of the signing script"
 

@@ -71,6 +71,7 @@ codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtWebKit.framewor
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtWebKitWidgets.framework/Versions/*
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtWidgets.framework/Versions/*
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtXml.framework/Versions/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtTest.framework/Versions/*
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/lib*
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/.gitkeep
 codesign -s "$id_key" /tmp/$newappname.app

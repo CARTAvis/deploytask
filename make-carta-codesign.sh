@@ -6,6 +6,11 @@
 
 echo "App signing script is running"
 
+newappname=Carta
+if [ "$cartaversion" != "" ];then
+	newappname=CARTA_$cartaversion
+fi
+
 ### Get the certifcicates
 echo "Step 1: Getting the certificates from GitHub"
 
@@ -54,6 +59,7 @@ codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/setupcartavis.sh
 codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/carta.sh
 codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/sqldrivers/*
 codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/platforms/*
+codesign -s "$id_key" /tmp/$newappname.app/Contents/MacOS/imageformats/*
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/qwt.framework/Versions/*
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtConcurrent.framework/Versions/*
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtCore.framework/Versions/*

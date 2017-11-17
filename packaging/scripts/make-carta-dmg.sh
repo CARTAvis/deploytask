@@ -67,15 +67,69 @@ cartaver=0.9.0 #$(cat $root_path/Carta/$name/Contents/Resources/VERSION | cut -d
 hdiutil create -srcfolder $root_path/Carta -volname "Carta_${OS_X_VERSION}_${cartaver}" $root_path/c1
 hdiutil convert -format UDRW -o $root_path/c2 $root_path/c1.dmg && rm $root_path/c1.dmg
 #open c2.dmg
-echo
-echo "Fix the Finder window of the Carta disk image (icon size and position)"
-echo "and then run this command:"
+#echo
+#echo "Fix the Finder window of the Carta disk image (icon size and position)"
+#echo "and then run this command:"
+
+echo "Setting up the installer"
+open /tmp/c2.dmg
+sleep 5
+
+echo "Copying the hidden background image folder in place"
+
+application_name=Carta
+
+mkdir -p /Volumes/Carta_${OS_X_VERSION}_${cartaver}/.background
+curl -O https://raw.githubusercontent.com/CARTAvis/deploytask/master/background.png
+cp background.png /Volumes/Carta_${OS_X_VERSION}_${cartaver}/.background
+
+echo "Setting up the size, icon positions, and background image of the dmg window" 
+echo '
+   tell application "Finder"
+     tell disk "'Carta_${OS_X_VERSION}_${cartaver}'"
+           open
+           delay 5
+           set current view of container window to icon view
+           set toolbar visible of container window to false
+           set statusbar visible of container window to false
+           set the bounds of container window to {400, 199, 1200, 400}
+           set theViewOptions to the icon view options of container window
+           set arrangement of theViewOptions to not arranged
+           set icon size of theViewOptions to 120
+           set background picture of theViewOptions to file ".background:background.png"
+           delay 5
+           make new alias file at container window to POSIX file "/Applications" with properties {name:"Applications"}
+           delay 5
+           set position of item "'${application_name}.app'" of container window to {370, 60}
+           delay 5
+           set position of item "Applications" of container window to {670, 60}
+           delay 5
+           update without registering applications
+           delay 5
+           close
+     end tell
+   end tell
+   tell application "Finder"
+     eject disk  "'Carta_${OS_X_VERSION}_${cartaver}'"
+   end tell
+' | osascript
+
+echo "Modifying the Info.plist file to set the App name and version number"
+open /tmp/c2.dmg
+sleep 5
+sed -i '' -e 's|<string>1.0</string>|<string>'$cartaver'</string>|g' /Volumes/"Carta_${OS_X_VERSION}_${cartaver}"/"${application_name}.app"/Contents/Info.plist     ## replaces 5th occurrence of 1.0
+sed -i '' -e 's|<string>Carta</string>|<string>'$application_name'</string>|g' /Volumes/"Carta_${OS_X_VERSION}_${cartaver}"/"${application_name}.app"/Contents/Info.plist ## replaces 2nd occurrence of Carta
+
+echo '
+  tell application "Finder"
+   eject disk  "'Carta_${OS_X_VERSION}_${cartaver}'"
+  end tell
+' | osascript
+
+sleep 5
+echo "Creating and compressing final dmg file"
+
 hdiutil convert -format UDBZ -o Carta $root_path/c2.dmg
 #osascript -e 'tell application "Finder" to activate'
 rm $root_path/c2.dmg
-
-#echo "attempting codesign"
-#curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/Qt5.8.0/make-carta-codesign.sh
-#chmod 755 make-carta-codesign.sh
-#./make-carta-codesign.sh
 

@@ -100,9 +100,9 @@ echo '
            delay 5
            make new alias file at container window to POSIX file "/Applications" with properties {name:"Applications"}
            delay 5
-           set position of item "'${newappname}.app'" of container window to {370, 60}
+           set position of item "'${newappname}.app'" of container window to {370, 90}
            delay 5
-           set position of item "Applications" of container window to {670, 60}
+           set position of item "Applications" of container window to {670, 90}
            delay 5
            update without registering applications
            delay 5

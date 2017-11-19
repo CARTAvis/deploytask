@@ -180,14 +180,20 @@ fi
 mv /tmp/Carta.app /tmp/$newappname.app
 
 
-# 14. Sign the app
+# 14. Modify the Info.plist file before app signing
+echo "Modifying the Info.plist file to set the App name and version number, before the app signing stage"
+sed -i '' -e 's|<string>1.0</string>|<string>'$cartaversion'</string>|g' /tmp/"${newappname}.app"/Contents/Info.plist     ## replaces 5th occurrence of 1.0
+sed -i '' -e 's|<string>Carta</string>|<string>'$newappname'</string>|g' /tmp/"${newappname}.app"/Contents/Info.plist ## replaces 2nd occurrence of Carta
+
+
+# 15. Sign the app
 echo "attempting codesign"
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/Qt5.8.0/make-carta-codesign.sh
 chmod 755 make-carta-codesign.sh
 ./make-carta-codesign.sh
 
 
-# 15. Download and run the dmg creation script
+# 16. Download and run the dmg creation script
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/fromCASAPackagingRepo/packaging/scripts/make-carta-dmg.sh
 chmod 755 make-carta-dmg.sh
 ./make-carta-dmg.sh /tmp/$newappname.app

@@ -23,8 +23,8 @@ ls -sort ## to check the files
 
 ### Decrypt the certificates
 echo "Step 2: Decypting the certificates"
-
-openssl enc -aes-256-cbc -k "$encryption_password" -in developer_ID_app.p12.enc -d -a -out developer_ID_app.p12
+openssl enc -aes-256-cbc -base64 -pass pass:$encryption_password -d -p -in developer_ID_app.p12.enc -out developer_ID_app.p12
+#openssl enc -aes-256-cbc -k "$encryption_password" -in developer_ID_app.p12.enc -d -a -out developer_ID_app.p12
 #openssl enc -aes-256-cbc -k "$encryption_password" -in developerID_application.cer.enc -d -a -out developerID_application.cer
 #openssl enc -aes-256-cbc -k "$encryption_password" -in development-key.p12.enc -d -a -out development-key.p12
 

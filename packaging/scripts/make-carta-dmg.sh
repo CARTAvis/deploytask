@@ -117,8 +117,8 @@ echo '
 echo "Modifying the Info.plist file to set the App name and version number"
 open /tmp/c2.dmg
 sleep 5
-sed -i '' -e 's|<string>1.0</string>|<string>'$cartaversion'</string>|g' /Volumes/"Carta_${OS_X_VERSION}_${cartaversion}"/"${newappname}.app"/Contents/Info.plist     ## replaces 5th occurrence of 1.0
-sed -i '' -e 's|<string>Carta</string>|<string>'$newappname'</string>|g' /Volumes/"Carta_${OS_X_VERSION}_${cartaversion}"/"${newappname}.app"/Contents/Info.plist ## replaces 2nd occurrence of Carta
+#sed -i '' -e 's|<string>1.0</string>|<string>'$cartaversion'</string>|g' /Volumes/"Carta_${OS_X_VERSION}_${cartaversion}"/"${newappname}.app"/Contents/Info.plist     ## replaces 5th occurrence of 1.0
+#sed -i '' -e 's|<string>Carta</string>|<string>'$newappname'</string>|g' /Volumes/"Carta_${OS_X_VERSION}_${cartaversion}"/"${newappname}.app"/Contents/Info.plist ## replaces 2nd occurrence of Carta
 
 echo '
   tell application "Finder"

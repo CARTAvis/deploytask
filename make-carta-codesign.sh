@@ -80,10 +80,12 @@ codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtXml.framework/V
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/QtTest.framework/Versions/*
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/lib*
 codesign -s "$id_key" /tmp/$newappname.app/Contents/Frameworks/.gitkeep
+codesign -s "$id_key" /tmp/$newappname.app/Contents/Info.plist
+codesign -s "$id_key" /tmp/$newappname.app/Contents/PkgInfo
 codesign -s "$id_key" /tmp/$newappname.app
 
 echo "Checking if codesign worked:"
-codesign -v /tmp/$newappname.app # for checking it worked
+codesign -dv --verbose=4 /tmp/$newappname.app # for checking it worked
 
 echo "This is the end of the signing script"
 

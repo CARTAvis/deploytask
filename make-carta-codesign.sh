@@ -1,9 +1,5 @@
 #!/bin/bash
-####
 #### Script to sign the CARTA Application
-#### (work in progress)
-#### First let's experiment and sign the final dmg file as that is the simplest
-
 echo "App signing script is running"
 
 newappname=Carta
@@ -15,8 +11,6 @@ fi
 echo "Step 1: Getting the certificates from GitHub"
 
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/master/signing/developer_ID_app.p12.enc
-#curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/master/signing/development-key.p12.enc
-#curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/master/signing/developerID_application.cer.enc
 curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/master/signing/AppleWWDRCA.cer
 
 ls -sort ## to check the files
@@ -24,9 +18,6 @@ ls -sort ## to check the files
 ### Decrypt the certificates
 echo "Step 2: Decypting the certificates"
 openssl enc -aes-256-cbc -base64 -pass pass:$encryption_password -d -p -in developer_ID_app.p12.enc -out developer_ID_app.p12
-#openssl enc -aes-256-cbc -k "$encryption_password" -in developer_ID_app.p12.enc -d -a -out developer_ID_app.p12
-#openssl enc -aes-256-cbc -k "$encryption_password" -in developerID_application.cer.enc -d -a -out developerID_application.cer
-#openssl enc -aes-256-cbc -k "$encryption_password" -in development-key.p12.enc -d -a -out development-key.p12
 
 ls -sort
 
@@ -46,12 +37,8 @@ security list-keychains
 echo "Step 4: Importing keys"
 
 security import AppleWWDRCA.cer -k acdc.carta.keychain -A
-#security import developerID_application.cer -k acdc.carta.keychain -A
-#security import development-key.p12 -k acdc.carta.keychain -P $security_password -A
 security import developer_ID_app.p12 -k acdc.carta.keychain -P $security_password -A
-
-security set-key-partition-list -S apple-tool:,apple: -s -k $keychain_password acdc.carta.keychain
-
+#security set-key-partition-list -S apple-tool:,apple: -s -k $keychain_password acdc.carta.keychain # if building in 10.12
 security find-identity -v -p codesigning
 
 ### Do the codesign

@@ -187,10 +187,10 @@ sed -i '' -e 's|<string>Carta</string>|<string>'$newappname'</string>|g' /tmp/"$
 
 
 # 15. Sign the app
-echo "attempting codesign"
-curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/Qt5.8.0/make-carta-codesign.sh
-chmod 755 make-carta-codesign.sh
-./make-carta-codesign.sh
+#echo "attempting codesign"
+#curl -O -L https://raw.githubusercontent.com/CARTAvis/deploytask/Qt5.8.0/make-carta-codesign.sh
+#chmod 755 make-carta-codesign.sh
+#./make-carta-codesign.sh
 
 
 # 16. Download and run the dmg creation script

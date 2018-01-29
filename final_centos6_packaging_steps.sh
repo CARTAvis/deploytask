@@ -55,14 +55,14 @@ rm -f $packagepath-$version/etc/html5/._html5.iml
 rm -f $packagepath-$version/etc/html5/.idea
 
 # 5. Setup geodetic and ephemerides data
-curl -O -L http://www.asiaa.sinica.edu.tw/~ajm/carta/measures_data.tar.gz
+curl -O -L http://alma.asiaa.sinica.edu.tw/_downloads/measures_data.tar.gz
 tar -xvf measures_data.tar.gz
 mv measures_data $packagepath-$version/etc/
 rm measures_data.tar.gz
 
 
 # 6. Copy over the sample images
-curl -O -L http://www.asiaa.sinica.edu.tw/~ajm/carta/images.tar.gz
+curl -O -L http://alma.asiaa.sinica.edu.tw/_downloads/images.tar.gz
 tar -xvf images.tar.gz
 mkdir $packagepath-$version/etc/images
 mv images $packagepath-$version/etc/

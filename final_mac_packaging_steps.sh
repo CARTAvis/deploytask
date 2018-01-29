@@ -75,14 +75,14 @@ cp -r $cartawork/CARTAvis/carta/VFS/DesktopDevel $packagepath/Contents/Resources
 
 
 echo "7. Setup geodetic and ephemerides data in the measures_directory:"
-curl -O -L http://www.asiaa.sinica.edu.tw/~ajm/carta/measures_data.tar.gz
+curl -O -L http://alma.asiaa.sinica.edu.tw/_downloads/measures_data.tar.gz
 tar -xvf measures_data.tar.gz
 mv measures_data $packagepath/Contents/Resources/
 rm measures_data.tar.gz
 
 
 echo "8. Copy over the sample images:"
-curl -O -L http://www.asiaa.sinica.edu.tw/~ajm/carta/images.tar.gz
+curl -O -L http://alma.asiaa.sinica.edu.tw/_downloads/images.tar.gz
 tar -xvf images.tar.gz
 mv images $packagepath/Contents/Resources/
 rm images.tar.gz
